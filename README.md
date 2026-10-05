@@ -4,7 +4,7 @@
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 
-> **Phase 0.5 — first modules.** Shell preview + working **Files**, **Calc**, and **Calendar** (localStorage, JSON export/import). **Keys** remains an honest placeholder. Nothing encrypts or collects keys.
+> **Phase 0.5 — first modules.** Shell preview + working **Files**, **Keys**, **Calc**, and **Calendar**. Keys = local Web Crypto (PBKDF2+AES-GCM), **not audited**. Passphrases never stored or uploaded.
 
 ## Principles
 
@@ -19,8 +19,9 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Path | Purpose |
 |------|---------|
 | [`docs/VISION.md`](docs/VISION.md) | Public vision (what it is / isn’t) |
-| [`apps/shell/`](apps/shell/) | Desktop preview + **Files v0** + **Calc v0** + **Calendar v0** |
+| [`apps/shell/`](apps/shell/) | Desktop preview + Files / Keys / Calc / Calendar v0 |
 | [`docs/FILES.md`](docs/FILES.md) | Virtual filesystem JSON schema |
+| [`docs/KEYS.md`](docs/KEYS.md) | Keys threat model + algorithms |
 | [`docs/EVENTS.md`](docs/EVENTS.md) | Calendar event JSON schema (interop stub) |
 
 ## Roadmap (summary)
@@ -28,9 +29,9 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Phase | Focus |
 |-------|--------|
 | **0** | Research, architecture, public scaffold |
-| **0.5** | Shell preview + **Files v0** + **Calc v0** + **Calendar v0** *(current)* |
+| **0.5** | Shell preview + Files + **Keys** + Calc + Calendar *(current)* |
 | **1** | Notes module + Settings + Files polish (OPFS optional) |
-| **2** | Keys (age-inspired) + module polish + optional Tauri shell |
+| **2** | Keys hardening (audit path) + module polish + optional Tauri shell |
 | **3** | Cross-module polish (Notes ↔ Calendar ↔ Files) |
 | **4** | Public lab release |
 
@@ -38,11 +39,19 @@ Detailed private planning lives with the Superintelligent Silicon ops vault; thi
 
 ## Try the Phase 0 preview
 
-Live desktop chrome — **Files**, **Calc**, and **Calendar** work; **Keys** is still a placeholder:
+Live desktop chrome — **Files**, **Keys**, **Calc**, and **Calendar** work:
 
 **https://exploresuperintelligence.online/sios/shell/**
 
 Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
+
+## Keys v0
+
+Open the shell → **Keys** (or press `2`).
+
+- Web Crypto **PBKDF2 + AES-GCM** only · passphrase unlock · encrypt/decrypt text blobs
+- Passphrase **never** stored · key cleared on Lock / close / tab hide
+- **Not audited** — non-critical data only · see [`docs/KEYS.md`](docs/KEYS.md)
 
 ## Files v0
 

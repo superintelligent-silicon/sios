@@ -100,6 +100,7 @@
     if (window.SIOS_CALC && window.SIOS_CALC.isOpen && window.SIOS_CALC.isOpen()) return;
     if (window.SIOS_CALENDAR && window.SIOS_CALENDAR.isOpen && window.SIOS_CALENDAR.isOpen()) return;
     if (window.SIOS_FILES && window.SIOS_FILES.isOpen && window.SIOS_FILES.isOpen()) return;
+    if (window.SIOS_KEYS && window.SIOS_KEYS.isOpen && window.SIOS_KEYS.isOpen()) return;
     const map = { "1": "files", "2": "keys", "3": "calc", "4": "calendar" };
     if (map[e.key]) {
       e.preventDefault();

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SIOS shell preview — Phase 0</title>
-  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Working Files, Calc, and Calendar. Local-only; no crypto or key collection." />
+  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Files, Keys, Calc, and Calendar are live. Keys is local-only Web Crypto — not audited; no key collection." />
   <meta name="theme-color" content="#050506" />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://exploresuperintelligence.online/sios/shell/" />
@@ -51,8 +51,8 @@
           <p class="sub">Silicon OS / Superintelligent OS</p>
           <p>
             This is a <strong>live Phase 0 preview</strong> of the desktop chrome —
-            not a working OS. <strong>Files</strong>, <strong>Calc</strong>, and <strong>Calendar</strong> are working local modules; Keys remains an honest placeholder.
-            No keys are collected. No network calls from this shell.
+            not a working OS. <strong>Files</strong>, <strong>Keys</strong>, <strong>Calc</strong>, and <strong>Calendar</strong> are working local modules.
+            Keys uses Web Crypto on-device only — not audited. No network calls from this shell.
           </p>
           <ul class="truth">
             <li>Local-first by design (when modules ship)</li>
@@ -144,7 +144,7 @@
         </div>
       </section>
 
-      <section class="window" data-window="keys" hidden aria-labelledby="title-keys" tabindex="-1">
+      <section class="window window-keys" data-window="keys" hidden aria-labelledby="title-keys" tabindex="-1">
         <div class="titlebar">
           <div class="traffic" aria-hidden="true">
             <button type="button" class="traf close" data-close="keys" tabindex="-1" title="Close"></button>
@@ -154,13 +154,70 @@
           <h1 id="title-keys">Keys</h1>
           <button type="button" class="win-close" data-close="keys" aria-label="Close Keys">✕</button>
         </div>
-        <div class="body panel">
-          <div class="panel-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none"><circle cx="18" cy="24" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M24.5 24h14v4M32 24v6M36 24v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <div class="body keys-body">
+          <div class="keys-banner" role="note">
+            <strong>v0 — not audited.</strong>
+            Keys never leave this device. Passphrases are not stored. No cloud, escrow, or recovery if you forget.
+            Use at your own risk for <em>non-critical</em> data only.
+            <a href="https://github.com/superintelligent-silicon/sios/blob/main/docs/KEYS.md">Threat model →</a>
           </div>
-          <p class="panel-kicker">Coming in a later phase</p>
-          <h2 class="panel-title">On-device encryption</h2>
-          <p>Age-inspired encrypt/decrypt with keys that <strong>never leave the device</strong> without deliberate export. This preview does <em>not</em> generate, store, or transmit keys.</p>
+
+          <p class="keys-live"><span class="dot" aria-hidden="true"></span> Live module · Web Crypto · local-only</p>
+
+          <div class="keys-layout">
+            <section class="keys-card" id="keys-vault-card">
+              <h2>Vault</h2>
+              <p class="keys-status" id="keys-status">Checking…</p>
+
+              <div id="keys-setup" hidden>
+                <p class="keys-help">Create a local vault verifier. We store only salt + an encrypted check string — never your passphrase.</p>
+                <label class="keys-field"><span>Passphrase</span><input type="password" id="keys-setup-pass" autocomplete="new-password" /></label>
+                <label class="keys-field"><span>Confirm</span><input type="password" id="keys-setup-pass2" autocomplete="new-password" /></label>
+                <button type="button" class="keys-btn primary" id="keys-setup-btn">Create vault</button>
+              </div>
+
+              <div id="keys-unlock" hidden>
+                <label class="keys-field"><span>Passphrase</span><input type="password" id="keys-unlock-pass" autocomplete="current-password" /></label>
+                <div class="keys-row">
+                  <button type="button" class="keys-btn primary" id="keys-unlock-btn">Unlock</button>
+                  <button type="button" class="keys-link danger" id="keys-reset-btn" title="Deletes vault verifier and local blob list">Reset vault…</button>
+                </div>
+              </div>
+
+              <div id="keys-unlocked" hidden>
+                <p class="keys-help">Unlocked in this tab only. Lock clears the key from memory.</p>
+                <button type="button" class="keys-btn" id="keys-lock-btn">Lock</button>
+              </div>
+            </section>
+
+            <section class="keys-card">
+              <h2>Encrypt</h2>
+              <p class="keys-help">Produces a downloadable JSON blob (salt, iv, ciphertext). Requires unlock.</p>
+              <label class="keys-field"><span>Label <em>(optional, stored in blob)</em></span><input type="text" id="keys-enc-label" maxlength="80" autocomplete="off" /></label>
+              <label class="keys-field"><span>Plaintext</span><textarea id="keys-enc-text" rows="5" spellcheck="false"></textarea></label>
+              <button type="button" class="keys-btn primary" id="keys-encrypt-btn">Encrypt &amp; download</button>
+            </section>
+
+            <section class="keys-card">
+              <h2>Decrypt</h2>
+              <p class="keys-help">Paste a blob or upload JSON. Enter the passphrase used to encrypt (vault unlock not required).</p>
+              <label class="keys-field"><span>Ciphertext JSON</span><textarea id="keys-dec-blob" rows="5" spellcheck="false" placeholder='{ "v": 0, "alg": "AES-GCM", ... }'></textarea></label>
+              <div class="keys-row">
+                <button type="button" class="keys-link" id="keys-dec-upload-btn">Upload blob…</button>
+                <input type="file" id="keys-dec-file" accept="application/json,.json" hidden />
+              </div>
+              <label class="keys-field"><span>Passphrase</span><input type="password" id="keys-dec-pass" autocomplete="current-password" /></label>
+              <button type="button" class="keys-btn primary" id="keys-decrypt-btn">Decrypt</button>
+              <label class="keys-field" id="keys-dec-out-wrap" hidden><span>Plaintext</span><textarea id="keys-dec-out" rows="5" readonly spellcheck="false"></textarea></label>
+            </section>
+
+            <section class="keys-card keys-library">
+              <h2>Local blob list</h2>
+              <p class="keys-help">Optional metadata (+ ciphertext) kept in localStorage. Still encrypted. Never includes your passphrase.</p>
+              <ul class="keys-blob-list" id="keys-blob-list"></ul>
+              <p class="keys-empty" id="keys-blob-empty">No saved blobs yet.</p>
+            </section>
+          </div>
         </div>
       </section>
 
@@ -334,12 +391,13 @@
 
   <p class="footer-note">
     <a href="https://exploresuperintelligence.online/sios/">← SIOS</a>
-    · Phase 0.5 · Files + Calc + Calendar live
+    · Phase 0.5 · Files + Keys + Calc + Calendar
   </p>
 
   <script src="shell.js" defer></script>
   <script src="calc.js" defer></script>
   <script src="calendar.js" defer></script>
   <script src="files.js" defer></script>
+  <script src="keys.js" defer></script>
 </body>
 </html>
