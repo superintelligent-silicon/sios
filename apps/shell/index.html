@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SIOS — Phase 0 shell</title>
+  <meta name="description" content="SIOS Phase 0 placeholder shell. Non-functional. No crypto. No key collection." />
+  <meta name="theme-color" content="#050506" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;560;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="desktop" role="application" aria-label="SIOS Phase 0 placeholder">
+    <header class="menubar">
+      <span class="brand">SIOS</span>
+      <span class="badge">Phase 0 · placeholder</span>
+      <span class="clock" id="clock" aria-hidden="true"></span>
+    </header>
+
+    <main class="stage">
+      <section class="window" aria-labelledby="win-title">
+        <div class="titlebar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <h1 id="win-title">Welcome</h1>
+        </div>
+        <div class="body">
+          <p class="serif">Superintelligent Silicon OS</p>
+          <p>
+            This is a <strong>non-functional</strong> desktop frame for Phase 0.
+            Modules below are labels only — no files, no crypto, no key collection.
+          </p>
+          <p class="muted">
+            Vision: <a href="../../docs/VISION.md">docs/VISION.md</a>
+            · Repo: <a href="https://github.com/superintelligent-silicon/sios">github.com/superintelligent-silicon/sios</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="dock" aria-label="Module stubs">
+      <button type="button" class="dock-item" disabled title="Coming later">
+        <span class="icon" aria-hidden="true">▦</span>
+        <span>Files</span>
+      </button>
+      <button type="button" class="dock-item" disabled title="Coming later — no keys collected">
+        <span class="icon" aria-hidden="true">⬡</span>
+        <span>Keys</span>
+      </button>
+      <button type="button" class="dock-item" disabled title="Coming later">
+        <span class="icon" aria-hidden="true">＋</span>
+        <span>Calc</span>
+      </button>
+      <button type="button" class="dock-item" disabled title="Coming later">
+        <span class="icon" aria-hidden="true">▣</span>
+        <span>Calendar</span>
+      </button>
+    </nav>
+  </div>
+  <script>
+    // Display-only clock; no network, no storage, no crypto.
+    const el = document.getElementById("clock");
+    const tick = () => {
+      const d = new Date();
+      el.textContent = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    };
+    tick();
+    setInterval(tick, 30_000);
+  </script>
+</body>
+</html>
