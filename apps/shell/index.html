@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SIOS shell preview — Phase 0</title>
-  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Honest placeholders — no fake crypto or key collection." />
+  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Working Calc module plus honest placeholders. Local-only; no crypto or key collection." />
   <meta name="theme-color" content="#050506" />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://exploresuperintelligence.online/sios/shell/" />
@@ -51,8 +51,8 @@
           <p class="sub">Silicon OS / Superintelligent OS</p>
           <p>
             This is a <strong>live Phase 0 preview</strong> of the desktop chrome —
-            not a working OS. Dock icons open honest “coming later” panels.
-            No files are stored. No keys are collected. No crypto runs here.
+            not a working OS. Calc is a <strong>working</strong> local module; Files / Keys / Calendar remain honest placeholders.
+            No keys are collected. No network calls from this shell.
           </p>
           <ul class="truth">
             <li>Local-first by design (when modules ship)</li>
@@ -107,7 +107,7 @@
         </div>
       </section>
 
-      <section class="window" data-window="calc" hidden aria-labelledby="title-calc" tabindex="-1">
+      <section class="window window-calc" data-window="calc" hidden aria-labelledby="title-calc" tabindex="-1">
         <div class="titlebar">
           <div class="traffic" aria-hidden="true">
             <button type="button" class="traf close" data-close="calc" tabindex="-1" title="Close"></button>
@@ -117,13 +117,52 @@
           <h1 id="title-calc">Calculator</h1>
           <button type="button" class="win-close" data-close="calc" aria-label="Close Calculator">✕</button>
         </div>
-        <div class="body panel">
-          <div class="panel-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none"><rect x="10" y="6" width="28" height="36" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M16 14h16M16 22h4M22 22h4M28 22h4M16 30h4M22 30h4M28 30h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <div class="body calc-body">
+          <p class="calc-live"><span class="dot" aria-hidden="true"></span> Live module · local-only · exportable</p>
+          <div class="calc-layout">
+            <div class="calc-main">
+              <div class="calc-display" aria-live="polite">
+                <div class="calc-expr" id="calc-expr"></div>
+                <div class="calc-value" id="calc-value">0</div>
+              </div>
+              <div class="calc-pad" role="group" aria-label="Calculator keypad">
+                <button type="button" class="calc-btn fn" data-calc="clear" title="Clear (Esc)">AC</button>
+                <button type="button" class="calc-btn fn" data-calc="sign">+/−</button>
+                <button type="button" class="calc-btn fn" data-calc="percent">%</button>
+                <button type="button" class="calc-btn op" data-calc="op" data-op="÷">÷</button>
+
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="7">7</button>
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="8">8</button>
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="9">9</button>
+                <button type="button" class="calc-btn op" data-calc="op" data-op="×">×</button>
+
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="4">4</button>
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="5">5</button>
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="6">6</button>
+                <button type="button" class="calc-btn op" data-calc="op" data-op="−">−</button>
+
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="1">1</button>
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="2">2</button>
+                <button type="button" class="calc-btn" data-calc="digit" data-digit="3">3</button>
+                <button type="button" class="calc-btn op" data-calc="op" data-op="+">+</button>
+
+                <button type="button" class="calc-btn zero" data-calc="digit" data-digit="0">0</button>
+                <button type="button" class="calc-btn" data-calc="dot">.</button>
+                <button type="button" class="calc-btn eq" data-calc="eq">=</button>
+              </div>
+            </div>
+            <aside class="calc-history" aria-label="Calculation history">
+              <div class="calc-history-head">
+                <h2>History</h2>
+                <div class="calc-history-actions">
+                  <button type="button" class="calc-link" id="calc-export" title="Download JSON">Export</button>
+                  <button type="button" class="calc-link danger" id="calc-clear-history">Clear</button>
+                </div>
+              </div>
+              <ol class="calc-history-list" id="calc-history-list"></ol>
+              <p class="calc-history-empty" id="calc-history-empty">No calculations yet. Results stay on this device.</p>
+            </aside>
           </div>
-          <p class="panel-kicker">Coming in a later phase</p>
-          <h2 class="panel-title">Calculator</h2>
-          <p>Clear, keyboard-friendly math with exportable history. No keypad here yet — placeholders only so we don’t pretend it works.</p>
         </div>
       </section>
 
@@ -182,5 +221,6 @@
   </p>
 
   <script src="shell.js" defer></script>
+  <script src="calc.js" defer></script>
 </body>
 </html>

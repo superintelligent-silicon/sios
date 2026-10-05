@@ -4,7 +4,7 @@
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 
-> **Phase 0 — scaffold.** Vision and a non-functional shell placeholder. Nothing encrypts, stores secrets, or ships as a product yet.
+> **Phase 0.5 — first module.** Shell preview + working **Calc** (local history, JSON export). Files / Keys / Calendar remain honest placeholders. Nothing encrypts or collects keys.
 
 ## Principles
 
@@ -19,15 +19,16 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Path | Purpose |
 |------|---------|
 | [`docs/VISION.md`](docs/VISION.md) | Public vision (what it is / isn’t) |
-| [`apps/shell/`](apps/shell/) | Phase 0 HTML/CSS shell placeholder |
+| [`apps/shell/`](apps/shell/) | Desktop preview + **Calc v0** (local-first) |
 
 ## Roadmap (summary)
 
 | Phase | Focus |
 |-------|--------|
-| **0** | Research, architecture, public scaffold *(current)* |
+| **0** | Research, architecture, public scaffold |
+| **0.5** | Shell preview + **Calc v0** (history + JSON export) *(current)* |
 | **1** | Web vertical slice: Files + Notes + Settings |
-| **2** | Keys (age-inspired) + Calculator + optional Tauri shell |
+| **2** | Keys (age-inspired) + Calc polish + optional Tauri shell |
 | **3** | Calendar + cross-module polish |
 | **4** | Public lab release |
 
@@ -35,11 +36,20 @@ Detailed private planning lives with the Superintelligent Silicon ops vault; thi
 
 ## Try the Phase 0 preview
 
-Live desktop chrome (honest placeholders — not a working OS):
+Live desktop chrome — **Calc works**; other dock apps are still placeholders:
 
 **https://exploresuperintelligence.online/sios/shell/**
 
 Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
+
+## Calc v0
+
+Open the shell → **Calc** dock icon (or press `3` when Calc is closed).
+
+- Arithmetic: `+ − × ÷`, decimals, `%`, sign toggle, `AC`
+- Keyboard: digits, operators, Enter, Backspace, Esc clears then closes
+- History in-panel; **Export** downloads JSON (stays on your machine)
+- Persisted with `localStorage` only — **no network**
 
 ## License
 

@@ -93,8 +93,9 @@
       return;
     }
 
-    // Digit shortcuts 1-4 for dock when not typing in a field
+    // Digit shortcuts 1-4 for dock — disabled while Calc is open (Calc owns digits)
     if (e.target.matches("input, textarea, select, [contenteditable]")) return;
+    if (window.SIOS_CALC && window.SIOS_CALC.isOpen && window.SIOS_CALC.isOpen()) return;
     const map = { "1": "files", "2": "keys", "3": "calc", "4": "calendar" };
     if (map[e.key]) {
       e.preventDefault();
