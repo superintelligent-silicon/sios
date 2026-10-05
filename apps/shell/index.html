@@ -29,7 +29,7 @@
         <a class="menu-link" href="https://github.com/superintelligent-silicon/sios">Source</a>
       </nav>
       <div class="menubar-right">
-        <span class="hint" id="focus-hint">Click a dock icon · Esc closes</span>
+        <span class="hint" id="focus-hint">Dock · Esc closes · 1–4 jump</span>
         <time class="clock" id="clock" datetime=""></time>
       </div>
     </header>
@@ -92,12 +92,18 @@
           <div class="files-layout">
             <div class="files-list-pane">
               <ul class="files-list" id="files-list" role="list"></ul>
-              <p class="files-empty" id="files-empty" hidden>This folder is empty.</p>
+              <div class="empty-state files-empty" id="files-empty" hidden>
+                <div class="empty-glyph" aria-hidden="true">▦</div>
+                <p class="empty-title">This folder is empty</p>
+                <p class="empty-copy">Create a folder or text file — everything stays in localStorage on this device.</p>
+              </div>
               <p class="files-quota" id="files-quota"></p>
             </div>
             <div class="files-editor-pane" id="files-editor-pane">
-              <div class="files-editor-empty" id="files-editor-empty">
-                <p>Select a text file to edit, or create one. Virtual tree only — no real disk or server upload.</p>
+              <div class="empty-state files-editor-empty" id="files-editor-empty">
+                <div class="empty-glyph" aria-hidden="true">▤</div>
+                <p class="empty-title">No file open</p>
+                <p class="empty-copy">Select a text file, or create one. Virtual tree only — no real disk, no upload.</p>
               </div>
               <div class="files-editor" id="files-editor" hidden>
                 <div class="files-editor-bar">
@@ -215,7 +221,11 @@
               <h2>Local blob list</h2>
               <p class="keys-help">Optional metadata (+ ciphertext) kept in localStorage. Still encrypted. Never includes your passphrase.</p>
               <ul class="keys-blob-list" id="keys-blob-list"></ul>
-              <p class="keys-empty" id="keys-blob-empty">No saved blobs yet.</p>
+              <div class="empty-state keys-empty" id="keys-blob-empty">
+              <div class="empty-glyph" aria-hidden="true">⬡</div>
+              <p class="empty-title">No saved blobs</p>
+              <p class="empty-copy">Encrypted downloads can also appear here as metadata — never your passphrase.</p>
+            </div>
             </section>
           </div>
         </div>
@@ -275,7 +285,11 @@
                 </div>
               </div>
               <ol class="calc-history-list" id="calc-history-list"></ol>
-              <p class="calc-history-empty" id="calc-history-empty">No calculations yet. Results stay on this device.</p>
+              <div class="empty-state calc-history-empty" id="calc-history-empty">
+                <div class="empty-glyph" aria-hidden="true">＋</div>
+                <p class="empty-title">No history yet</p>
+                <p class="empty-copy">Results stay on this device. Export or Save to Files anytime.</p>
+              </div>
             </aside>
           </div>
         </div>
@@ -312,7 +326,11 @@
                 <button type="button" class="cal-btn-primary" id="cal-add">Add</button>
               </div>
               <ul class="cal-event-list" id="cal-event-list"></ul>
-              <p class="cal-empty" id="cal-empty">No events this day. Add one — data stays on this device.</p>
+              <div class="empty-state cal-empty" id="cal-empty">
+                <div class="empty-glyph" aria-hidden="true">▣</div>
+                <p class="empty-title">Nothing on this day</p>
+                <p class="empty-copy">Tap Add to create an event. Use Day → Files or All → Files to hand off JSON.</p>
+              </div>
               <div class="cal-io">
                 <button type="button" class="cal-link" id="cal-export">Export JSON</button>
                 <button type="button" class="cal-link" id="cal-to-files-day" title="Write this day’s events into Files">Day → Files</button>
@@ -394,7 +412,7 @@
 
   <p class="footer-note">
     <a href="https://exploresuperintelligence.online/sios/">← SIOS</a>
-    · Phase 0.5 · modules + local data bus
+    · SIOS shell · local-first
   </p>
 
   <script src="bus.js" defer></script>

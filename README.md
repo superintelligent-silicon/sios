@@ -46,6 +46,8 @@ Live desktop chrome — **Files**, **Keys**, **Calc**, and **Calendar** work:
 
 Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
 
+Shell UI: Apple-level polish pass (typography, chrome, empty states, motion) — no new modules.
+
 ## Data bus v0
 
 Local pub/sub (`apps/shell/bus.js`). Try:
