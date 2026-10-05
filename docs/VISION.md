@@ -1,6 +1,8 @@
 # SIOS vision (public)
 
-**SIOS** = **Superintelligent Silicon OS**.
+> SIOS (Silicon OS / Superintelligent OS)
+
+**SIOS** = **Silicon OS** and/or **Superintelligent OS** (Superintelligent Silicon).
 
 ## One-liner
 

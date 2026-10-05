@@ -1,6 +1,6 @@
-# SIOS — Superintelligent Silicon OS
+# SIOS — Silicon OS / Superintelligent OS
 
-**SIOS** is a compact, **local-first** utility OS you can open in a page or wrap as a small desktop app.
+**SIOS** (**Silicon OS** / **Superintelligent OS**, from Superintelligent Silicon) is a compact, **local-first** utility OS you can open in a page or wrap as a small desktop app.
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 

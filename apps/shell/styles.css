@@ -128,8 +128,16 @@ a:hover { text-decoration: underline; }
   font-family: var(--serif);
   font-size: 1.65rem;
   letter-spacing: -0.02em;
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.25rem;
   line-height: 1.15;
+}
+.body .sub {
+  margin: 0 0 0.95rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 .body p { margin: 0 0 0.85rem; color: var(--fg-muted); line-height: 1.65; font-size: 0.98rem; }
 .body strong { color: var(--fg); font-weight: 560; }
