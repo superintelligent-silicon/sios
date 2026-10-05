@@ -33,11 +33,13 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 
 Detailed private planning lives with the Superintelligent Silicon ops vault; this repo stays public and secret-free.
 
-## Try the placeholder
+## Try the Phase 0 preview
 
-Open [`apps/shell/index.html`](apps/shell/index.html) locally, or visit the marketing page:
+Live desktop chrome (honest placeholders — not a working OS):
 
-**https://exploresuperintelligence.online/sios/**
+**https://exploresuperintelligence.online/sios/shell/**
+
+Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
 
 ## License
 

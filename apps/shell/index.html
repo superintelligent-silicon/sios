@@ -3,71 +3,184 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIOS — Phase 0 shell</title>
-  <meta name="description" content="SIOS Phase 0 placeholder shell. Non-functional. No crypto. No key collection." />
+  <title>SIOS shell preview — Phase 0</title>
+  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Honest placeholders — no fake crypto or key collection." />
   <meta name="theme-color" content="#050506" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://exploresuperintelligence.online/sios/shell/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;560;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="desktop" role="application" aria-label="SIOS Phase 0 placeholder">
+  <a class="skip" href="#desktop">Skip to desktop</a>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <div id="desktop" class="desktop" role="application" aria-label="SIOS Phase 0 desktop preview">
     <header class="menubar">
-      <span class="brand">SIOS</span>
-      <span class="badge">Phase 0 · placeholder</span>
-      <span class="clock" id="clock" aria-hidden="true"></span>
+      <div class="menubar-left">
+        <a class="brand" href="https://exploresuperintelligence.online/sios/" title="Back to SIOS">SIOS</a>
+        <span class="badge">Phase 0 · preview</span>
+      </div>
+      <nav class="menubar-mid" aria-label="Shell">
+        <button type="button" class="menu-link" data-open="welcome" id="menu-welcome">Welcome</button>
+        <a class="menu-link" href="https://exploresuperintelligence.online/sios/">About</a>
+        <a class="menu-link" href="https://github.com/superintelligent-silicon/sios">Source</a>
+      </nav>
+      <div class="menubar-right">
+        <span class="hint" id="focus-hint">Click a dock icon · Esc closes</span>
+        <time class="clock" id="clock" datetime=""></time>
+      </div>
     </header>
 
-    <main class="stage">
-      <section class="window" aria-labelledby="win-title">
+    <main class="stage" id="stage">
+      <!-- Windows injected / toggled by script -->
+      <section class="window is-open" data-window="welcome" aria-labelledby="title-welcome" tabindex="-1">
         <div class="titlebar">
-          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-          <h1 id="win-title">Welcome</h1>
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="welcome" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-welcome">Welcome</h1>
+          <button type="button" class="win-close" data-close="welcome" aria-label="Close Welcome">✕</button>
         </div>
         <div class="body">
           <p class="serif">SIOS</p>
           <p class="sub">Silicon OS / Superintelligent OS</p>
           <p>
-            This is a <strong>non-functional</strong> desktop frame for Phase 0.
-            Modules below are labels only — no files, no crypto, no key collection.
+            This is a <strong>live Phase 0 preview</strong> of the desktop chrome —
+            not a working OS. Dock icons open honest “coming later” panels.
+            No files are stored. No keys are collected. No crypto runs here.
           </p>
+          <ul class="truth">
+            <li>Local-first by design (when modules ship)</li>
+            <li>Exportable data — no lock-in goal</li>
+            <li>MIT source on GitHub</li>
+          </ul>
           <p class="muted">
-            Vision: <a href="../../docs/VISION.md">docs/VISION.md</a>
-            · Repo: <a href="https://github.com/superintelligent-silicon/sios">github.com/superintelligent-silicon/sios</a>
+            <a href="https://exploresuperintelligence.online/sios/">SIOS landing</a>
+            · <a href="https://github.com/superintelligent-silicon/sios">Repository</a>
+            · <a href="https://github.com/superintelligent-silicon/sios/blob/main/docs/VISION.md">Vision</a>
           </p>
+        </div>
+      </section>
+
+      <section class="window" data-window="files" hidden aria-labelledby="title-files" tabindex="-1">
+        <div class="titlebar">
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="files" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-files">Files</h1>
+          <button type="button" class="win-close" data-close="files" aria-label="Close Files">✕</button>
+        </div>
+        <div class="body panel">
+          <div class="panel-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M8 12h12l3 3h17v21H8V12z" stroke="currentColor" stroke-width="1.6"/><path d="M8 18h32" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <p class="panel-kicker">Coming in a later phase</p>
+          <h2 class="panel-title">Local file tree</h2>
+          <p>Browse and organize files on-device (OPFS / disk). Export folders as ZIP. Not wired yet — this window is a preview of intent.</p>
+        </div>
+      </section>
+
+      <section class="window" data-window="keys" hidden aria-labelledby="title-keys" tabindex="-1">
+        <div class="titlebar">
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="keys" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-keys">Keys</h1>
+          <button type="button" class="win-close" data-close="keys" aria-label="Close Keys">✕</button>
+        </div>
+        <div class="body panel">
+          <div class="panel-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none"><circle cx="18" cy="24" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M24.5 24h14v4M32 24v6M36 24v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <p class="panel-kicker">Coming in a later phase</p>
+          <h2 class="panel-title">On-device encryption</h2>
+          <p>Age-inspired encrypt/decrypt with keys that <strong>never leave the device</strong> without deliberate export. This preview does <em>not</em> generate, store, or transmit keys.</p>
+        </div>
+      </section>
+
+      <section class="window" data-window="calc" hidden aria-labelledby="title-calc" tabindex="-1">
+        <div class="titlebar">
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="calc" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-calc">Calculator</h1>
+          <button type="button" class="win-close" data-close="calc" aria-label="Close Calculator">✕</button>
+        </div>
+        <div class="body panel">
+          <div class="panel-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none"><rect x="10" y="6" width="28" height="36" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M16 14h16M16 22h4M22 22h4M28 22h4M16 30h4M22 30h4M28 30h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <p class="panel-kicker">Coming in a later phase</p>
+          <h2 class="panel-title">Calculator</h2>
+          <p>Clear, keyboard-friendly math with exportable history. No keypad here yet — placeholders only so we don’t pretend it works.</p>
+        </div>
+      </section>
+
+      <section class="window" data-window="calendar" hidden aria-labelledby="title-calendar" tabindex="-1">
+        <div class="titlebar">
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="calendar" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-calendar">Calendar</h1>
+          <button type="button" class="win-close" data-close="calendar" aria-label="Close Calendar">✕</button>
+        </div>
+        <div class="body panel">
+          <div class="panel-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="32" height="30" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M8 18h32M16 6v6M32 6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="14" y="24" width="6" height="6" rx="1" fill="currentColor" opacity="0.35"/></svg>
+          </div>
+          <p class="panel-kicker">Coming in a later phase</p>
+          <h2 class="panel-title">Local calendar</h2>
+          <p>Events on-device with ICS import/export. Interop with notes and files later. This panel is a signpost, not a scheduler.</p>
         </div>
       </section>
     </main>
 
-    <nav class="dock" aria-label="Module stubs">
-      <button type="button" class="dock-item" disabled title="Coming later">
-        <span class="icon" aria-hidden="true">▦</span>
-        <span>Files</span>
+    <nav class="dock" aria-label="SIOS modules">
+      <button type="button" class="dock-item" data-open="files" aria-controls="title-files" aria-pressed="false">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M5 8h8l2 2h12v14H5V8z" stroke="currentColor" stroke-width="1.5"/><path d="M5 12h22" stroke="currentColor" stroke-width="1.5"/></svg>
+        </span>
+        <span class="label">Files</span>
       </button>
-      <button type="button" class="dock-item" disabled title="Coming later — no keys collected">
-        <span class="icon" aria-hidden="true">⬡</span>
-        <span>Keys</span>
+      <button type="button" class="dock-item" data-open="keys" aria-controls="title-keys" aria-pressed="false">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><circle cx="12" cy="16" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M16 16h10v2.5M21 16v4M24.5 16v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span class="label">Keys</span>
       </button>
-      <button type="button" class="dock-item" disabled title="Coming later">
-        <span class="icon" aria-hidden="true">＋</span>
-        <span>Calc</span>
+      <button type="button" class="dock-item" data-open="calc" aria-controls="title-calc" aria-pressed="false">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><rect x="7" y="4" width="18" height="24" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 9h10M11 15h3.5M15.5 15H19M22 15h-2.5M11 20h3.5M15.5 20H19M22 20h-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span class="label">Calc</span>
       </button>
-      <button type="button" class="dock-item" disabled title="Coming later">
-        <span class="icon" aria-hidden="true">▣</span>
-        <span>Calendar</span>
+      <button type="button" class="dock-item" data-open="calendar" aria-controls="title-calendar" aria-pressed="false">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><rect x="6" y="7" width="20" height="19" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 12h20M11 4v5M21 4v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span class="label">Calendar</span>
       </button>
     </nav>
   </div>
-  <script>
-    // Display-only clock; no network, no storage, no crypto.
-    const el = document.getElementById("clock");
-    const tick = () => {
-      const d = new Date();
-      el.textContent = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    };
-    tick();
-    setInterval(tick, 30_000);
-  </script>
+
+  <p class="footer-note">
+    <a href="https://exploresuperintelligence.online/sios/">← SIOS</a>
+    · Phase 0 preview · no product claims
+  </p>
+
+  <script src="shell.js" defer></script>
 </body>
 </html>
