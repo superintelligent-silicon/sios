@@ -25,4 +25,4 @@ A highly compact piece of software you can drop onto a webpage or a computer and
 
 ## Status
 
-**Phase 0.** Public scaffold and vision only. The shell in this repo is a **non-functional** placeholder with an honest Phase 0 badge.
+**Phase 0.5.** Public scaffold plus working **Calc** and **Calendar** modules in the shell. Files / Keys remain honest placeholders.

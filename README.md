@@ -4,7 +4,7 @@
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 
-> **Phase 0.5 — first module.** Shell preview + working **Calc** (local history, JSON export). Files / Keys / Calendar remain honest placeholders. Nothing encrypts or collects keys.
+> **Phase 0.5 — first modules.** Shell preview + working **Calc** and **Calendar** (localStorage, JSON export/import). Files / Keys remain honest placeholders. Nothing encrypts or collects keys.
 
 ## Principles
 
@@ -19,24 +19,25 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Path | Purpose |
 |------|---------|
 | [`docs/VISION.md`](docs/VISION.md) | Public vision (what it is / isn’t) |
-| [`apps/shell/`](apps/shell/) | Desktop preview + **Calc v0** (local-first) |
+| [`apps/shell/`](apps/shell/) | Desktop preview + **Calc v0** + **Calendar v0** |
+| [`docs/EVENTS.md`](docs/EVENTS.md) | Calendar event JSON schema (interop stub) |
 
 ## Roadmap (summary)
 
 | Phase | Focus |
 |-------|--------|
 | **0** | Research, architecture, public scaffold |
-| **0.5** | Shell preview + **Calc v0** (history + JSON export) *(current)* |
+| **0.5** | Shell preview + **Calc v0** + **Calendar v0** *(current)* |
 | **1** | Web vertical slice: Files + Notes + Settings |
-| **2** | Keys (age-inspired) + Calc polish + optional Tauri shell |
-| **3** | Calendar + cross-module polish |
+| **2** | Keys (age-inspired) + module polish + optional Tauri shell |
+| **3** | Cross-module polish (Notes ↔ Calendar ↔ Files) |
 | **4** | Public lab release |
 
 Detailed private planning lives with the Superintelligent Silicon ops vault; this repo stays public and secret-free.
 
 ## Try the Phase 0 preview
 
-Live desktop chrome — **Calc works**; other dock apps are still placeholders:
+Live desktop chrome — **Calc** and **Calendar** work; Files / Keys are still placeholders:
 
 **https://exploresuperintelligence.online/sios/shell/**
 
@@ -50,6 +51,15 @@ Open the shell → **Calc** dock icon (or press `3` when Calc is closed).
 - Keyboard: digits, operators, Enter, Backspace, Esc clears then closes
 - History in-panel; **Export** downloads JSON (stays on your machine)
 - Persisted with `localStorage` only — **no network**
+
+## Calendar v0
+
+Open the shell → **Calendar** dock icon (or press `4` when Calendar is closed).
+
+- Month grid · add / edit / delete events (title, date, optional notes)
+- ← → month nav · `T` today · `N` new event · Esc closes modal then window
+- **Export JSON** / **Import JSON** with explicit **Merge** or **Replace all**
+- Schema: [`docs/EVENTS.md`](docs/EVENTS.md) · `localStorage` only — **no network**
 
 ## License
 
