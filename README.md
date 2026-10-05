@@ -4,7 +4,7 @@
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 
-> **Phase 0.5 — first modules.** Shell preview + working **Calc** and **Calendar** (localStorage, JSON export/import). Files / Keys remain honest placeholders. Nothing encrypts or collects keys.
+> **Phase 0.5 — first modules.** Shell preview + working **Files**, **Calc**, and **Calendar** (localStorage, JSON export/import). **Keys** remains an honest placeholder. Nothing encrypts or collects keys.
 
 ## Principles
 
@@ -19,7 +19,8 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Path | Purpose |
 |------|---------|
 | [`docs/VISION.md`](docs/VISION.md) | Public vision (what it is / isn’t) |
-| [`apps/shell/`](apps/shell/) | Desktop preview + **Calc v0** + **Calendar v0** |
+| [`apps/shell/`](apps/shell/) | Desktop preview + **Files v0** + **Calc v0** + **Calendar v0** |
+| [`docs/FILES.md`](docs/FILES.md) | Virtual filesystem JSON schema |
 | [`docs/EVENTS.md`](docs/EVENTS.md) | Calendar event JSON schema (interop stub) |
 
 ## Roadmap (summary)
@@ -27,8 +28,8 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Phase | Focus |
 |-------|--------|
 | **0** | Research, architecture, public scaffold |
-| **0.5** | Shell preview + **Calc v0** + **Calendar v0** *(current)* |
-| **1** | Web vertical slice: Files + Notes + Settings |
+| **0.5** | Shell preview + **Files v0** + **Calc v0** + **Calendar v0** *(current)* |
+| **1** | Notes module + Settings + Files polish (OPFS optional) |
 | **2** | Keys (age-inspired) + module polish + optional Tauri shell |
 | **3** | Cross-module polish (Notes ↔ Calendar ↔ Files) |
 | **4** | Public lab release |
@@ -37,11 +38,20 @@ Detailed private planning lives with the Superintelligent Silicon ops vault; thi
 
 ## Try the Phase 0 preview
 
-Live desktop chrome — **Calc** and **Calendar** work; Files / Keys are still placeholders:
+Live desktop chrome — **Files**, **Calc**, and **Calendar** work; **Keys** is still a placeholder:
 
 **https://exploresuperintelligence.online/sios/shell/**
 
 Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
+
+## Files v0
+
+Open the shell → **Files** dock icon (or press `1`).
+
+- Virtual folders + text files in `localStorage` (not real disk / not uploaded)
+- Create folder/file · rename/delete · in-panel text editor · breadcrumbs
+- **Export JSON** / **Import** with **Merge** or **Replace all**
+- Download current text file · ⌘/Ctrl+S to save · schema [`docs/FILES.md`](docs/FILES.md)
 
 ## Calc v0
 

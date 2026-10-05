@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SIOS shell preview — Phase 0</title>
-  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Working Calc + Calendar modules. Local-only; no crypto or key collection." />
+  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Working Files, Calc, and Calendar. Local-only; no crypto or key collection." />
   <meta name="theme-color" content="#050506" />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://exploresuperintelligence.online/sios/shell/" />
@@ -51,7 +51,7 @@
           <p class="sub">Silicon OS / Superintelligent OS</p>
           <p>
             This is a <strong>live Phase 0 preview</strong> of the desktop chrome —
-            not a working OS. <strong>Calc</strong> and <strong>Calendar</strong> are working local modules; Files / Keys remain honest placeholders.
+            not a working OS. <strong>Files</strong>, <strong>Calc</strong>, and <strong>Calendar</strong> are working local modules; Keys remains an honest placeholder.
             No keys are collected. No network calls from this shell.
           </p>
           <ul class="truth">
@@ -67,7 +67,7 @@
         </div>
       </section>
 
-      <section class="window" data-window="files" hidden aria-labelledby="title-files" tabindex="-1">
+      <section class="window window-files" data-window="files" hidden aria-labelledby="title-files" tabindex="-1">
         <div class="titlebar">
           <div class="traffic" aria-hidden="true">
             <button type="button" class="traf close" data-close="files" tabindex="-1" title="Close"></button>
@@ -77,13 +77,70 @@
           <h1 id="title-files">Files</h1>
           <button type="button" class="win-close" data-close="files" aria-label="Close Files">✕</button>
         </div>
-        <div class="body panel">
-          <div class="panel-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none"><path d="M8 12h12l3 3h17v21H8V12z" stroke="currentColor" stroke-width="1.6"/><path d="M8 18h32" stroke="currentColor" stroke-width="1.6"/></svg>
+        <div class="body files-body">
+          <p class="files-live"><span class="dot" aria-hidden="true"></span> Live module · virtual FS · localStorage · exportable</p>
+          <div class="files-toolbar">
+            <nav class="files-crumbs" id="files-crumbs" aria-label="Path"></nav>
+            <div class="files-actions">
+              <button type="button" class="files-btn" id="files-new-folder">New folder</button>
+              <button type="button" class="files-btn" id="files-new-file">New file</button>
+              <button type="button" class="files-link" id="files-export">Export JSON</button>
+              <button type="button" class="files-link" id="files-import-btn">Import</button>
+              <input type="file" id="files-import" accept="application/json,.json" hidden />
+            </div>
           </div>
-          <p class="panel-kicker">Coming in a later phase</p>
-          <h2 class="panel-title">Local file tree</h2>
-          <p>Browse and organize files on-device (OPFS / disk). Export folders as ZIP. Not wired yet — this window is a preview of intent.</p>
+          <div class="files-layout">
+            <div class="files-list-pane">
+              <ul class="files-list" id="files-list" role="list"></ul>
+              <p class="files-empty" id="files-empty" hidden>This folder is empty.</p>
+              <p class="files-quota" id="files-quota"></p>
+            </div>
+            <div class="files-editor-pane" id="files-editor-pane">
+              <div class="files-editor-empty" id="files-editor-empty">
+                <p>Select a text file to edit, or create one. Virtual tree only — no real disk or server upload.</p>
+              </div>
+              <div class="files-editor" id="files-editor" hidden>
+                <div class="files-editor-bar">
+                  <span class="files-editor-name" id="files-editor-name"></span>
+                  <div class="files-editor-actions">
+                    <button type="button" class="files-link" id="files-download">Download</button>
+                    <button type="button" class="files-link" id="files-rename">Rename</button>
+                    <button type="button" class="files-link danger" id="files-delete">Delete</button>
+                    <button type="button" class="files-btn primary" id="files-save" disabled>Saved</button>
+                  </div>
+                </div>
+                <textarea id="files-textarea" spellcheck="false" aria-label="File contents"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="files-modal" id="files-prompt-modal" hidden>
+            <div class="files-modal-card" role="dialog" aria-modal="true" aria-labelledby="files-prompt-title">
+              <h3 id="files-prompt-title">Name</h3>
+              <form id="files-prompt-form">
+                <label class="files-field">
+                  <span id="files-prompt-label">Name</span>
+                  <input type="text" id="files-prompt-input" required maxlength="80" autocomplete="off" />
+                </label>
+                <div class="files-modal-actions">
+                  <button type="button" class="files-btn" id="files-prompt-cancel">Cancel</button>
+                  <button type="submit" class="files-btn primary">OK</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="files-modal" id="files-import-modal" hidden>
+            <div class="files-modal-card" role="dialog" aria-modal="true" aria-labelledby="files-import-title">
+              <h3 id="files-import-title">Import tree</h3>
+              <p class="files-import-msg" id="files-import-msg"></p>
+              <div class="files-modal-actions">
+                <button type="button" class="files-btn" id="files-import-cancel">Cancel</button>
+                <button type="button" class="files-btn" id="files-import-merge">Merge</button>
+                <button type="button" class="files-btn primary" id="files-import-replace">Replace all</button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -277,11 +334,12 @@
 
   <p class="footer-note">
     <a href="https://exploresuperintelligence.online/sios/">← SIOS</a>
-    · Phase 0.5 preview · Calc + Calendar live
+    · Phase 0.5 · Files + Calc + Calendar live
   </p>
 
   <script src="shell.js" defer></script>
   <script src="calc.js" defer></script>
   <script src="calendar.js" defer></script>
+  <script src="files.js" defer></script>
 </body>
 </html>

@@ -86,6 +86,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (window.SIOS_CALENDAR && window.SIOS_CALENDAR.isModalOpen && window.SIOS_CALENDAR.isModalOpen()) return;
+      if (window.SIOS_FILES && window.SIOS_FILES.isModalOpen && window.SIOS_FILES.isModalOpen()) return;
       const open = windows.find((w) => !w.hidden && w.getAttribute("data-window") !== "welcome");
       if (open) {
         closeWindow(open.getAttribute("data-window"));
@@ -94,10 +95,11 @@
       return;
     }
 
-    // Digit shortcuts 1-4 for dock — disabled while Calc/Calendar own keys
+    // Digit shortcuts 1-4 for dock — disabled while module apps own keys
     if (e.target.matches("input, textarea, select, [contenteditable]")) return;
     if (window.SIOS_CALC && window.SIOS_CALC.isOpen && window.SIOS_CALC.isOpen()) return;
     if (window.SIOS_CALENDAR && window.SIOS_CALENDAR.isOpen && window.SIOS_CALENDAR.isOpen()) return;
+    if (window.SIOS_FILES && window.SIOS_FILES.isOpen && window.SIOS_FILES.isOpen()) return;
     const map = { "1": "files", "2": "keys", "3": "calc", "4": "calendar" };
     if (map[e.key]) {
       e.preventDefault();
