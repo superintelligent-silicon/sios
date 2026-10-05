@@ -51,7 +51,7 @@
           <p class="sub">Silicon OS / Superintelligent OS</p>
           <p>
             This is a <strong>live Phase 0 preview</strong> of the desktop chrome —
-            not a working OS. <strong>Files</strong>, <strong>Keys</strong>, <strong>Calc</strong>, and <strong>Calendar</strong> are working local modules.
+            not a working OS. <strong>Files</strong>, <strong>Keys</strong>, <strong>Calc</strong>, and <strong>Calendar</strong> are live, with a local <strong>data bus</strong> (e.g. Save to Files).
             Keys uses Web Crypto on-device only — not audited. No network calls from this shell.
           </p>
           <ul class="truth">
@@ -270,6 +270,7 @@
                 <h2>History</h2>
                 <div class="calc-history-actions">
                   <button type="button" class="calc-link" id="calc-export" title="Download JSON">Export</button>
+                  <button type="button" class="calc-link" id="calc-to-files" title="Write history into Files via bus">Save to Files</button>
                   <button type="button" class="calc-link danger" id="calc-clear-history">Clear</button>
                 </div>
               </div>
@@ -314,6 +315,8 @@
               <p class="cal-empty" id="cal-empty">No events this day. Add one — data stays on this device.</p>
               <div class="cal-io">
                 <button type="button" class="cal-link" id="cal-export">Export JSON</button>
+                <button type="button" class="cal-link" id="cal-to-files-day" title="Write this day’s events into Files">Day → Files</button>
+                <button type="button" class="cal-link" id="cal-to-files-all" title="Write all events into Files">All → Files</button>
                 <button type="button" class="cal-link" id="cal-import-btn">Import JSON</button>
                 <input type="file" id="cal-import" accept="application/json,.json" hidden />
               </div>
@@ -391,13 +394,14 @@
 
   <p class="footer-note">
     <a href="https://exploresuperintelligence.online/sios/">← SIOS</a>
-    · Phase 0.5 · Files + Keys + Calc + Calendar
+    · Phase 0.5 · modules + local data bus
   </p>
 
+  <script src="bus.js" defer></script>
   <script src="shell.js" defer></script>
+  <script src="files.js" defer></script>
   <script src="calc.js" defer></script>
   <script src="calendar.js" defer></script>
-  <script src="files.js" defer></script>
   <script src="keys.js" defer></script>
 </body>
 </html>

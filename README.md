@@ -4,7 +4,7 @@
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 
-> **Phase 0.5 — first modules.** Shell preview + working **Files**, **Keys**, **Calc**, and **Calendar**. Keys = local Web Crypto (PBKDF2+AES-GCM), **not audited**. Passphrases never stored or uploaded.
+> **Phase 0.5 — first modules.** Files, Keys, Calc, Calendar + local **data bus** (Save to Files). Keys = Web Crypto, **not audited**. Passphrases never stored or uploaded.
 
 ## Principles
 
@@ -22,6 +22,7 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | [`apps/shell/`](apps/shell/) | Desktop preview + Files / Keys / Calc / Calendar v0 |
 | [`docs/FILES.md`](docs/FILES.md) | Virtual filesystem JSON schema |
 | [`docs/KEYS.md`](docs/KEYS.md) | Keys threat model + algorithms |
+| [`docs/BUS.md`](docs/BUS.md) | Cross-module data bus API |
 | [`docs/EVENTS.md`](docs/EVENTS.md) | Calendar event JSON schema (interop stub) |
 
 ## Roadmap (summary)
@@ -29,7 +30,7 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Phase | Focus |
 |-------|--------|
 | **0** | Research, architecture, public scaffold |
-| **0.5** | Shell preview + Files + **Keys** + Calc + Calendar *(current)* |
+| **0.5** | Modules + **data bus** (Calc/Calendar → Files) *(current)* |
 | **1** | Notes module + Settings + Files polish (OPFS optional) |
 | **2** | Keys hardening (audit path) + module polish + optional Tauri shell |
 | **3** | Cross-module polish (Notes ↔ Calendar ↔ Files) |
@@ -44,6 +45,15 @@ Live desktop chrome — **Files**, **Keys**, **Calc**, and **Calendar** work:
 **https://exploresuperintelligence.online/sios/shell/**
 
 Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
+
+## Data bus v0
+
+Local pub/sub (`apps/shell/bus.js`). Try:
+
+1. Open **Calc**, do a few equations → **Save to Files** → see `Imports/calc-history-….json`
+2. Open **Calendar**, add events → **Day → Files** or **All → Files**
+
+Details: [`docs/BUS.md`](docs/BUS.md). No passphrase handoff to Keys.
 
 ## Keys v0
 

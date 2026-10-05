@@ -297,14 +297,18 @@
     renderDay();
   });
 
-  document.getElementById("cal-export").addEventListener("click", () => {
-    const payload = {
+  function eventsPayload(list) {
+    return {
       app: "SIOS Calendar",
       version: 0,
       schema: "https://github.com/superintelligent-silicon/sios/blob/main/docs/EVENTS.md",
       exportedAt: new Date().toISOString(),
-      events,
+      events: list,
     };
+  }
+
+  document.getElementById("cal-export").addEventListener("click", () => {
+    const payload = eventsPayload(events);
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: "application/json",
     });
@@ -316,6 +320,33 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  });
+
+  function saveEventsToFiles(list, fileName) {
+    if (!window.SIOS_BUS) {
+      alert("Data bus not available.");
+      return;
+    }
+    if (!list.length) {
+      alert("No events to save.");
+      return;
+    }
+    window.SIOS_BUS.publish(window.SIOS_BUS.TYPES.FILES_WRITE_TEXT, "calendar", {
+      folderPath: ["Imports"],
+      fileName,
+      content: JSON.stringify(eventsPayload(list), null, 2),
+      openAfter: true,
+    });
+  }
+
+  document.getElementById("cal-to-files-day")?.addEventListener("click", () => {
+    const dayEvents = eventsOn(selected);
+    saveEventsToFiles(dayEvents, `calendar-${selected}.json`);
+  });
+
+  document.getElementById("cal-to-files-all")?.addEventListener("click", () => {
+    const stamp = new Date().toISOString().slice(0, 10);
+    saveEventsToFiles(events, `calendar-all-${stamp}.json`);
   });
 
   document.getElementById("cal-import-btn").addEventListener("click", () => {

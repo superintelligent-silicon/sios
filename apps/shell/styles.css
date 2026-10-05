@@ -1629,3 +1629,44 @@ a:hover { color: var(--accent-bright); }
   color: var(--fg-soft);
   font-size: 0.86rem;
 }
+
+/* ——— Data bus toast ——— */
+#sios-toast {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: calc(var(--dock-h, 5.5rem) + 0.85rem);
+  transform: translateX(-50%) translateY(12px);
+  max-width: min(420px, calc(100vw - 2rem));
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(14, 14, 17, 0.92);
+  color: var(--fg-muted);
+  font-size: 0.84rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+  box-shadow: 0 16px 40px -24px rgba(0,0,0,0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+#sios-toast.is-on {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+#sios-toast[data-kind="ok"] {
+  color: var(--fg);
+  border-color: rgba(109, 203, 139, 0.35);
+}
+
+#sios-toast[data-kind="err"] {
+  color: #f0c4a0;
+  border-color: rgba(240, 168, 160, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sios-toast { transition: none; }
+}

@@ -25,4 +25,4 @@ A highly compact piece of software you can drop onto a webpage or a computer and
 
 ## Status
 
-**Phase 0.5.** Public scaffold plus working **Files**, **Keys**, **Calc**, and **Calendar**. Keys is local Web Crypto and **not audited**.
+**Phase 0.5.** Working **Files**, **Keys**, **Calc**, and **Calendar**, plus a local **data bus** for explicit handoffs (e.g. Save to Files). Keys is local Web Crypto and **not audited**.

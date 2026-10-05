@@ -84,7 +84,7 @@
 
   function sanitizeName(name) {
     return String(name || "")
-      .replace(/[\\/]/0]/0<>|]/g, "")
+      .replace(/[\/:*?"<>|]/g, "")
       .replace(/^\.+/, "")
       .trim()
       .slice(0, 80);
@@ -593,10 +593,117 @@
     );
   }
 
+
+  /**
+   * Write (or overwrite) a text file under folderPath segments from root.
+   * Creates intermediate folders. Used by SIOS_BUS files.writeText.
+   * @returns {{ ok: boolean, path: string, error?: string }}
+   */
+  function writeTextFile({ folderPath, fileName, content, openAfter }) {
+    try {
+      const folders = Array.isArray(folderPath)
+        ? folderPath.map((p) => sanitizeName(p)).filter(Boolean)
+        : [];
+      let name = sanitizeName(fileName);
+      if (!name) return { ok: false, path: "", error: "Invalid file name" };
+      if (!/\.[a-z0-9]+$/i.test(name)) name += ".txt";
+
+      let dir = root;
+      const walked = [];
+      for (const seg of folders) {
+        let child = dir.children.find((c) => c.type === "dir" && c.name === seg);
+        if (!child) {
+          child = { type: "dir", name: seg, children: [] };
+          dir.children.push(child);
+          dir.children = sanitizeTree(dir).children;
+          child = dir.children.find((c) => c.type === "dir" && c.name === seg);
+        }
+        dir = child;
+        walked.push(seg);
+      }
+
+      let file = dir.children.find((c) => c.type === "file" && c.name === name);
+      let text = String(content == null ? "" : content);
+      if (text.length > MAX_FILE_CHARS) {
+        text = text.slice(0, MAX_FILE_CHARS);
+      }
+      if (!file) {
+        // unique if somehow conflict with dir
+        let finalName = name;
+        let n = 2;
+        while (dir.children.some((c) => c.name.toLowerCase() === finalName.toLowerCase())) {
+          const parts = name.split(".");
+          if (parts.length > 1) {
+            const ext = parts.pop();
+            finalName = `${parts.join(".")}-${n++}.${ext}`;
+          } else {
+            finalName = `${name}-${n++}`;
+          }
+        }
+        name = finalName;
+        dir.children.push({
+          type: "file",
+          name,
+          content: text,
+          updatedAt: now(),
+        });
+      } else {
+        file.content = text;
+        file.updatedAt = now();
+      }
+      dir.children = sanitizeTree(dir).children;
+      if (!persist()) {
+        return { ok: false, path: [...walked, name].join("/"), error: "Persist failed" };
+      }
+
+      const full = [...walked, name];
+      if (openAfter) {
+        path = walked.slice();
+        openFile(full);
+      } else {
+        path = walked.slice();
+        render();
+      }
+      return { ok: true, path: full.join("/") };
+    } catch (err) {
+      return {
+        ok: false,
+        path: "",
+        error: err && err.message ? err.message : "write failed",
+      };
+    }
+  }
+
+  // Receive cross-module writes (explicit publish from other apps)
+  if (window.SIOS_BUS) {
+    window.SIOS_BUS.subscribe((msg) => {
+      if (!msg || msg.type !== window.SIOS_BUS.TYPES.FILES_WRITE_TEXT) return;
+      const p = msg.payload || {};
+      const result = writeTextFile({
+        folderPath: p.folderPath || ["Imports"],
+        fileName: p.fileName || "import.txt",
+        content: p.content || "",
+        openAfter: !!p.openAfter,
+      });
+      window.SIOS_BUS.publish(
+        window.SIOS_BUS.TYPES.FILES_WRITE_RESULT,
+        "files",
+        { requestFrom: msg.from, ...result }
+      );
+      if (result.ok && window.SIOS_BUS.toast) {
+        window.SIOS_BUS.toast(`Saved to Files · ${result.path}`, "ok");
+      } else if (!result.ok && window.SIOS_BUS.toast) {
+        window.SIOS_BUS.toast(`Files write failed · ${result.error || "error"}`, "err");
+      }
+    });
+  }
+
   window.SIOS_FILES = {
     isOpen: isFilesOpen,
     isModalOpen,
+    writeTextFile,
     handleKey(e) {
+
       if (!isFilesOpen()) return false;
       if (isModalOpen()) {
         if (e.key === "Escape") {

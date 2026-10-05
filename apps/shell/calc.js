@@ -278,13 +278,17 @@
     else if (action === "percent") percent();
   });
 
-  document.getElementById("calc-export")?.addEventListener("click", () => {
-    const payload = {
+  function historyPayload() {
+    return {
       app: "SIOS Calc",
       version: 0,
       exportedAt: new Date().toISOString(),
       history,
     };
+  }
+
+  document.getElementById("calc-export")?.addEventListener("click", () => {
+    const payload = historyPayload();
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: "application/json",
     });
@@ -296,6 +300,24 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("calc-to-files")?.addEventListener("click", () => {
+    if (!window.SIOS_BUS) {
+      alert("Data bus not available.");
+      return;
+    }
+    if (!history.length) {
+      alert("No history to save yet.");
+      return;
+    }
+    const stamp = new Date().toISOString().slice(0, 10);
+    window.SIOS_BUS.publish(window.SIOS_BUS.TYPES.FILES_WRITE_TEXT, "calc", {
+      folderPath: ["Imports"],
+      fileName: `calc-history-${stamp}.json`,
+      content: JSON.stringify(historyPayload(), null, 2),
+      openAfter: true,
+    });
   });
 
   document.getElementById("calc-clear-history")?.addEventListener("click", () => {
