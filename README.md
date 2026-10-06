@@ -4,7 +4,7 @@
 
 Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar**, **Notes**, **Settings** — exportable data, calm design, no account required for the core path.
 
-> **Phase 0.5 — first modules.** Files, Keys, Calc, Calendar + local **data bus** (Save to Files). Keys = Web Crypto, **not audited**. Passphrases never stored or uploaded.
+> **Phase 1a — Notes + Settings + storage + ZIP.** Files, Notes, Settings, Keys, Calc, Calendar + data bus + IndexedDB store + **UNENCRYPTED** ZIP backup + strict CSP. Keys = Web Crypto PBKDF2 600k, **not audited**. Passphrases never stored or uploaded.
 
 ## Principles
 
@@ -19,8 +19,11 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Path | Purpose |
 |------|---------|
 | [`docs/VISION.md`](docs/VISION.md) | Public vision (what it is / isn’t) |
-| [`apps/shell/`](apps/shell/) | Desktop preview + Files / Keys / Calc / Calendar v0 |
+| [`apps/shell/`](apps/shell/) | Desktop preview + Files / Notes / Settings / Keys / Calc / Calendar |
 | [`docs/FILES.md`](docs/FILES.md) | Virtual filesystem JSON schema |
+| [`docs/NOTES.md`](docs/NOTES.md) | Notes-as-files (`.md`) |
+| [`docs/STORE.md`](docs/STORE.md) | IndexedDB storage adapter |
+| [`docs/BACKUP.md`](docs/BACKUP.md) | UNENCRYPTED ZIP backup |
 | [`docs/KEYS.md`](docs/KEYS.md) | Keys threat model + algorithms |
 | [`docs/BUS.md`](docs/BUS.md) | Cross-module data bus API |
 | [`docs/EVENTS.md`](docs/EVENTS.md) | Calendar event JSON schema (interop stub) |
@@ -30,23 +33,28 @@ Interoperable modules (planned): **Files**, **Keys**, **Calculator**, **Calendar
 | Phase | Focus |
 |-------|--------|
 | **0** | Research, architecture, public scaffold |
-| **0.5** | Modules + **data bus** (Calc/Calendar → Files) *(current)* |
-| **1** | Notes module + Settings + Files polish (OPFS optional) |
+| **0.5** | Modules + **data bus** (Calc/Calendar → Files) |
+| **1a** | Notes + Settings + IndexedDB + ZIP + CSP + Keys 600k *(current)* |
+| **1** | Files polish / OPFS optional / Markdown preview later |
 | **2** | Keys hardening (audit path) + module polish + optional Tauri shell |
 | **3** | Cross-module polish (Notes ↔ Calendar ↔ Files) |
 | **4** | Public lab release |
 
 Detailed private planning lives with the Superintelligent Silicon ops vault; this repo stays public and secret-free.
 
-## Try the Phase 0 preview
+## Try the Phase 1a preview
 
-Live desktop chrome — **Files**, **Keys**, **Calc**, and **Calendar** work:
+Live desktop — **Files**, **Notes**, **Settings**, **Keys**, **Calc**, **Calendar**, ZIP backup:
 
 **https://exploresuperintelligence.online/sios/shell/**
 
 Or open [`apps/shell/`](apps/shell/) locally. Landing: **https://exploresuperintelligence.online/sios/**
 
-Shell UI: Apple-level polish pass (typography, chrome, empty states, motion) — no new modules.
+Shell UI: Apple-level polish · system fonts under strict CSP (no Google Fonts CDN).
+
+### Third-party
+
+- [`fflate`](https://github.com/101arrowz/fflate) (MIT) vendored in `apps/shell/vendor/` for ZIP backup
 
 ## Data bus v0
 
@@ -59,9 +67,9 @@ Details: [`docs/BUS.md`](docs/BUS.md). No passphrase handoff to Keys.
 
 ## Keys v0
 
-Open the shell → **Keys** (or press `2`).
+Open the shell → **Keys** (or press `3`).
 
-- Web Crypto **PBKDF2 + AES-GCM** only · passphrase unlock · encrypt/decrypt text blobs
+- Web Crypto **PBKDF2 (600,000) + AES-GCM** · passphrase unlock · encrypt/decrypt text blobs · legacy 310k vaults migrate on unlock
 - Passphrase **never** stored · key cleared on Lock / close / tab hide
 - **Not audited** — non-critical data only · see [`docs/KEYS.md`](docs/KEYS.md)
 
@@ -69,14 +77,31 @@ Open the shell → **Keys** (or press `2`).
 
 Open the shell → **Files** dock icon (or press `1`).
 
-- Virtual folders + text files in `localStorage` (not real disk / not uploaded)
+- Virtual folders + text files in **IndexedDB** via SIOS_STORE (not real disk / not uploaded)
 - Create folder/file · rename/delete · in-panel text editor · breadcrumbs
 - **Export JSON** / **Import** with **Merge** or **Replace all**
 - Download current text file · ⌘/Ctrl+S to save · schema [`docs/FILES.md`](docs/FILES.md)
 
+## Notes v0
+
+Open the shell → **Notes** (or press `2`).
+
+- Notes are `.md` files under Files → `/Notes` (YAML front matter)
+- Plain-text editor only — **no HTML rendering**
+- Search by title · shared with Files tree
+
+## Settings v0
+
+Open the shell → **Settings** (or press `6`).
+
+- Theme (system / dark / light)
+- Keys idle lock timeout
+- Storage status + request persistent storage
+- **UNENCRYPTED** ZIP export/import (fflate) — clearly labeled
+
 ## Calc v0
 
-Open the shell → **Calc** dock icon (or press `3` when Calc is closed).
+Open the shell → **Calc** dock icon (or press `4` when Calc is closed).
 
 - Arithmetic: `+ − × ÷`, decimals, `%`, sign toggle, `AC`
 - Keyboard: digits, operators, Enter, Backspace, Esc clears then closes

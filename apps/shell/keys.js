@@ -8,9 +8,12 @@
   const VAULT_KEY = "sios-keys-vault-v0";
   const BLOBS_KEY = "sios-keys-blobs-v0";
   const CHECK_PLAIN = "SIOS_KEYS_VAULT_V0";
-  const PBKDF2_ITERATIONS = 310000;
+  const PBKDF2_ITERATIONS = 600000; // OWASP / Bitwarden floor (was 310000)
+  const PBKDF2_LEGACY = 310000;
   const MAX_PLAIN_CHARS = 200000;
   const MAX_LIBRARY = 40;
+  let idleTimer = null;
+  let lockTimeoutMs = 0; // 0 = only visibility/close (Settings can raise)
 
   const win = document.querySelector('[data-window="keys"]');
   if (!win) return;
@@ -57,9 +60,7 @@
 
   function loadVault() {
     try {
-      const raw = localStorage.getItem(VAULT_KEY);
-      if (!raw) return null;
-      const v = JSON.parse(raw);
+      const v = window.SIOS_STORE ? window.SIOS_STORE.get(VAULT_KEY) : null;
       if (!v || !v.salt || !v.iv || !v.check || !v.kdf) return null;
       return v;
     } catch {
@@ -68,14 +69,14 @@
   }
 
   function saveVault(v) {
-    localStorage.setItem(VAULT_KEY, JSON.stringify(v));
+    if (window.SIOS_STORE) {
+      window.SIOS_STORE.set(VAULT_KEY, v).catch(() => {});
+    }
   }
 
   function loadLibrary() {
     try {
-      const raw = localStorage.getItem(BLOBS_KEY);
-      if (!raw) return [];
-      const list = JSON.parse(raw);
+      const list = window.SIOS_STORE ? window.SIOS_STORE.get(BLOBS_KEY) : null;
       return Array.isArray(list) ? list.slice(0, MAX_LIBRARY) : [];
     } catch {
       return [];
@@ -83,10 +84,13 @@
   }
 
   function saveLibrary(list) {
-    localStorage.setItem(BLOBS_KEY, JSON.stringify(list.slice(0, MAX_LIBRARY)));
+    if (window.SIOS_STORE) {
+      window.SIOS_STORE.set(BLOBS_KEY, list.slice(0, MAX_LIBRARY)).catch(() => {});
+    }
   }
 
-  async function deriveKey(passphrase, saltBytes) {
+  async function deriveKey(passphrase, saltBytes, iterations) {
+    const iters = iterations || PBKDF2_ITERATIONS;
     const enc = new TextEncoder();
     const baseKey = await crypto.subtle.importKey(
       "raw",
@@ -99,7 +103,7 @@
       {
         name: "PBKDF2",
         salt: saltBytes,
-        iterations: PBKDF2_ITERATIONS,
+        iterations: iters,
         hash: "SHA-256",
       },
       baseKey,
@@ -107,6 +111,70 @@
       false, // not extractable
       ["encrypt", "decrypt"]
     );
+  }
+
+  function vaultIterations(vault) {
+    const n = vault && vault.kdf && vault.kdf.iterations;
+    return typeof n === "number" && n > 0 ? n : PBKDF2_LEGACY;
+  }
+
+  async function migrateVaultKdf(passphrase, vault) {
+    const current = vaultIterations(vault);
+    if (current >= PBKDF2_ITERATIONS) return sessionKey;
+    const salt = fromB64(vault.salt);
+    const key = await deriveKey(passphrase, salt, PBKDF2_ITERATIONS);
+    const enc = new TextEncoder();
+    const { iv, ciphertext } = await encryptBytes(key, enc.encode(CHECK_PLAIN));
+    const next = {
+      ...vault,
+      v: Math.max(vault.v || 0, 1),
+      kdf: {
+        name: "PBKDF2",
+        hash: "SHA-256",
+        iterations: PBKDF2_ITERATIONS,
+      },
+      alg: "AES-GCM",
+      salt: vault.salt,
+      iv: b64(iv),
+      check: b64(ciphertext),
+      migratedAt: new Date().toISOString(),
+      previousIterations: current,
+    };
+    saveVault(next);
+    if (window.SIOS_BUS && window.SIOS_BUS.toast) {
+      window.SIOS_BUS.toast("Keys vault upgraded to 600k PBKDF2", "ok");
+    }
+    return key;
+  }
+
+  function readLockTimeout() {
+    try {
+      if (window.SIOS_SETTINGS && typeof window.SIOS_SETTINGS.getLockTimeoutMs === "function") {
+        return window.SIOS_SETTINGS.getLockTimeoutMs();
+      }
+      const s = window.SIOS_STORE ? window.SIOS_STORE.get("sios-settings-v0") : null;
+      const mins = s && s.lockTimeoutMinutes;
+      if (mins === 0 || mins === "0") return 0;
+      if (typeof mins === "number" && mins > 0) return mins * 60 * 1000;
+    } catch {
+      /* ignore */
+    }
+    return 0;
+  }
+
+  function bumpIdle() {
+    lockTimeoutMs = readLockTimeout();
+    if (idleTimer) {
+      clearTimeout(idleTimer);
+      idleTimer = null;
+    }
+    if (!sessionKey || !lockTimeoutMs) return;
+    idleTimer = setTimeout(() => {
+      lockSession();
+      if (window.SIOS_BUS && window.SIOS_BUS.toast) {
+        window.SIOS_BUS.toast("Keys locked · idle timeout", "info");
+      }
+    }, lockTimeoutMs);
   }
 
   async function encryptBytes(key, plainBytes) {
@@ -133,10 +201,16 @@
       statusEl.textContent = "No vault on this device yet.";
       setupEl.hidden = false;
     } else if (sessionKey) {
-      statusEl.textContent = "Unlocked · key held in memory for this tab only.";
+      const iters = vaultIterations(vault);
+      statusEl.textContent =
+        "Unlocked · key in memory for this tab only · PBKDF2 " +
+        iters.toLocaleString() +
+        " iterations.";
       unlockedEl.hidden = false;
     } else {
-      statusEl.textContent = "Vault present · locked.";
+      const iters = vaultIterations(vault);
+      statusEl.textContent =
+        "Vault present · locked · PBKDF2 " + iters.toLocaleString() + " iterations.";
       unlockEl.hidden = false;
     }
     renderLibrary();
@@ -216,6 +290,10 @@
   function lockSession() {
     sessionKey = null;
     sessionSaltB64 = null;
+    if (idleTimer) {
+      clearTimeout(idleTimer);
+      idleTimer = null;
+    }
     clearField(document.getElementById("keys-unlock-pass"));
     clearField(document.getElementById("keys-enc-text"));
     clearField(document.getElementById("keys-dec-pass"));
@@ -274,13 +352,19 @@
     }
     try {
       const salt = fromB64(vault.salt);
-      const key = await deriveKey(pass, salt);
+      const iters = vaultIterations(vault);
+      const key = await deriveKey(pass, salt, iters);
       const plain = await decryptBytes(key, fromB64(vault.iv), fromB64(vault.check));
       const text = new TextDecoder().decode(plain);
       if (text !== CHECK_PLAIN) throw new Error("Vault check mismatch");
       sessionKey = key;
       sessionSaltB64 = vault.salt;
+      // Upgrade legacy 310k vaults to 600k while passphrase is known
+      if (iters < PBKDF2_ITERATIONS) {
+        sessionKey = await migrateVaultKdf(pass, vault);
+      }
       clearField(document.getElementById("keys-unlock-pass"));
+      bumpIdle();
       refreshUI();
     } catch {
       alert("Unlock failed. Wrong passphrase or corrupted vault data.");
@@ -295,8 +379,10 @@
       "Reset vault? This deletes the local vault verifier and the optional blob list.\n\nEncrypted files you already downloaded are NOT deleted — but you must remember the passphrase.\n\nThere is no recovery."
     );
     if (!ok) return;
-    localStorage.removeItem(VAULT_KEY);
-    localStorage.removeItem(BLOBS_KEY);
+    if (window.SIOS_STORE) {
+      window.SIOS_STORE.remove(VAULT_KEY);
+      window.SIOS_STORE.remove(BLOBS_KEY);
+    }
     lockSession();
   });
 
@@ -434,6 +520,13 @@
   window.SIOS_KEYS = {
     isOpen: () => win && !win.hidden,
     lock: lockSession,
+    bumpIdle,
+    setLockTimeoutFromSettings: bumpIdle,
+    PBKDF2_ITERATIONS,
+    reloadFromStore() {
+      lockSession();
+      refreshUI();
+    },
   };
 
   // Also lock on page hide
@@ -441,5 +534,12 @@
     if (document.hidden) lockSession();
   });
 
-  refreshUI();
+  win.addEventListener("pointerdown", bumpIdle);
+  win.addEventListener("keydown", bumpIdle);
+
+  async function bootKeys() {
+    if (window.SIOS_STORE && window.SIOS_STORE.ready) await window.SIOS_STORE.ready;
+    refreshUI();
+  }
+  bootKeys();
 })();

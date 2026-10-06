@@ -4,7 +4,7 @@
 
 ## Promise (v0)
 
-- Cryptography via the browser **Web Crypto API** only: **PBKDF2-SHA-256** (310,000 iterations) → **AES-256-GCM**.
+- Cryptography via the browser **Web Crypto API** only: **PBKDF2-SHA-256** (600,000 iterations; legacy vaults at 310,000 migrate on unlock) → **AES-256-GCM**.
 - Passphrases are **never** written to `localStorage`, cookies, or the network.
 - Raw key material is **non-extractable** `CryptoKey` held in memory while unlocked; cleared on Lock, when the Keys window closes, or when the tab is hidden.
 - Ciphertext downloads and optional local blob library contain **salt + iv + ciphertext** only (plus public metadata such as label).
@@ -39,7 +39,7 @@
   "app": "SIOS Keys",
   "schema": "https://github.com/superintelligent-silicon/sios/blob/main/docs/KEYS.md",
   "alg": "AES-GCM",
-  "kdf": { "name": "PBKDF2", "hash": "SHA-256", "iterations": 310000 },
+  "kdf": { "name": "PBKDF2", "hash": "SHA-256", "iterations": 600000 },
   "label": "optional",
   "salt": "<base64>",
   "iv": "<base64>",
@@ -52,7 +52,7 @@
 
 | Key | Contents |
 |-----|----------|
-| `sios-keys-vault-v0` | Salt + verifier ciphertext (not passphrase) |
+| `sios-keys-vault-v0` | Salt + verifier ciphertext (not passphrase); held in IndexedDB via SIOS_STORE |
 | `sios-keys-blobs-v0` | Optional list of envelopes + labels |
 
 ## Operational advice
@@ -64,7 +64,7 @@
 
 ## Algorithms (normative for v0)
 
-- KDF: PBKDF2, hash SHA-256, iterations **310000**, salt 16 bytes  
+- KDF: PBKDF2, hash SHA-256, iterations **600000** (new vaults); unlock migrates 310000 → 600000, salt 16 bytes  
 - Cipher: AES-GCM, 256-bit key, IV 12 bytes, plaintext UTF-8  
 
-Future versions may migrate KDF (e.g. Argon2) only with an explicit version bump and migration path.
+Phase 1a bumps PBKDF2 to 600,000 with an on-unlock migration from 310,000. Future versions may move to Argon2id only with an explicit version bump and migration path.

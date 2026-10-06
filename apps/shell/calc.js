@@ -1,4 +1,4 @@
-/*! SIOS Calc v0 — local-only. No network. localStorage history + JSON export. */
+/*! SIOS Calc v0 — local-only. No network. SIOS_STORE history + JSON export. */
 (function () {
   "use strict";
 
@@ -17,13 +17,11 @@
   let stored = null;
   let pendingOp = null;
   let fresh = true; // next digit replaces display
-  let history = loadHistory();
+  let history = [];
 
   function loadHistory() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
+      const parsed = window.SIOS_STORE ? window.SIOS_STORE.get(STORAGE_KEY) : null;
       return Array.isArray(parsed) ? parsed.slice(0, MAX_HISTORY) : [];
     } catch {
       return [];
@@ -32,7 +30,9 @@
 
   function saveHistory() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      if (window.SIOS_STORE) {
+        window.SIOS_STORE.set(STORAGE_KEY, history).catch(() => {});
+      }
     } catch {
       /* quota / private mode — keep in-memory */
     }
@@ -199,6 +199,17 @@
   // Expose for shell.js digit-shortcut guard
   window.SIOS_CALC = {
     isOpen: isCalcOpen,
+    getHistory: () => history.slice(),
+    setHistory(list) {
+      history = Array.isArray(list) ? list.slice(0, MAX_HISTORY) : [];
+      saveHistory();
+      renderHistory();
+    },
+    reloadFromStore() {
+      history = loadHistory();
+      renderHistory();
+    },
+    STORAGE_KEY,
     handleKey(e) {
       if (!isCalcOpen()) return false;
       if (e.target.matches("input, textarea, select, [contenteditable]")) return false;
@@ -336,6 +347,11 @@
     true
   );
 
-  render();
-  renderHistory();
+  async function bootCalc() {
+    if (window.SIOS_STORE && window.SIOS_STORE.ready) await window.SIOS_STORE.ready;
+    history = loadHistory();
+    render();
+    renderHistory();
+  }
+  bootCalc();
 })();

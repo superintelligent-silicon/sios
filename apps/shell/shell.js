@@ -1,4 +1,4 @@
-/*! SIOS Phase 0 shell — UI only. No storage, crypto, or network beyond this page. */
+/*! SIOS Phase 1a shell — window chrome. Storage/crypto live in modules. No network. */
 (function () {
   "use strict";
 
@@ -87,6 +87,8 @@
     if (e.key === "Escape") {
       if (window.SIOS_CALENDAR && window.SIOS_CALENDAR.isModalOpen && window.SIOS_CALENDAR.isModalOpen()) return;
       if (window.SIOS_FILES && window.SIOS_FILES.isModalOpen && window.SIOS_FILES.isModalOpen()) return;
+      const backupModal = document.getElementById("backup-import-modal");
+      if (backupModal && !backupModal.hidden) return;
       const open = windows.find((w) => !w.hidden && w.getAttribute("data-window") !== "welcome");
       if (open) {
         closeWindow(open.getAttribute("data-window"));
@@ -101,7 +103,16 @@
     if (window.SIOS_CALENDAR && window.SIOS_CALENDAR.isOpen && window.SIOS_CALENDAR.isOpen()) return;
     if (window.SIOS_FILES && window.SIOS_FILES.isOpen && window.SIOS_FILES.isOpen()) return;
     if (window.SIOS_KEYS && window.SIOS_KEYS.isOpen && window.SIOS_KEYS.isOpen()) return;
-    const map = { "1": "files", "2": "keys", "3": "calc", "4": "calendar" };
+    if (window.SIOS_NOTES && window.SIOS_NOTES.isOpen && window.SIOS_NOTES.isOpen()) return;
+    if (window.SIOS_SETTINGS && window.SIOS_SETTINGS.isOpen && window.SIOS_SETTINGS.isOpen()) return;
+    const map = {
+      "1": "files",
+      "2": "notes",
+      "3": "keys",
+      "4": "calc",
+      "5": "calendar",
+      "6": "settings",
+    };
     if (map[e.key]) {
       e.preventDefault();
       toggleWindow(map[e.key]);

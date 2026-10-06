@@ -1,4 +1,4 @@
-/*! SIOS Calendar v0 — local-only. localStorage + JSON import/export. No network. */
+/*! SIOS Calendar v0 — local-only. SIOS_STORE + JSON import/export. No network. */
 (function () {
   "use strict";
 
@@ -23,7 +23,7 @@
 
   let view = startOfMonth(new Date());
   let selected = isoDate(new Date());
-  let events = loadEvents();
+  let events = [];
   let editingId = null;
   let pendingImport = null;
 
@@ -48,21 +48,23 @@
     return new Date(y, m - 1, d);
   }
 
+  function normalizeEvents(parsed) {
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((e) => e && typeof e.title === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.date))
+      .map((e) => ({
+        id: String(e.id || uid()),
+        title: String(e.title).slice(0, 120),
+        date: e.date,
+        notes: e.notes != null ? String(e.notes).slice(0, 2000) : "",
+        updatedAt: e.updatedAt || new Date().toISOString(),
+      }));
+  }
+
   function loadEvents() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed
-        .filter((e) => e && typeof e.title === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.date))
-        .map((e) => ({
-          id: String(e.id || uid()),
-          title: String(e.title).slice(0, 120),
-          date: e.date,
-          notes: e.notes != null ? String(e.notes).slice(0, 2000) : "",
-          updatedAt: e.updatedAt || new Date().toISOString(),
-        }));
+      const parsed = window.SIOS_STORE ? window.SIOS_STORE.get(STORAGE_KEY) : null;
+      return normalizeEvents(parsed);
     } catch {
       return [];
     }
@@ -70,7 +72,9 @@
 
   function saveEvents() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+      if (window.SIOS_STORE) {
+        window.SIOS_STORE.set(STORAGE_KEY, events).catch(() => {});
+      }
     } catch {
       /* private mode / quota */
     }
@@ -200,6 +204,19 @@
   window.SIOS_CALENDAR = {
     isOpen: isCalOpen,
     isModalOpen,
+    getEvents: () => events.slice(),
+    setEvents(list) {
+      events = normalizeEvents(list);
+      saveEvents();
+      renderMonth();
+      renderDay();
+    },
+    reloadFromStore() {
+      events = loadEvents();
+      renderMonth();
+      renderDay();
+    },
+    STORAGE_KEY,
     handleKey(e) {
       if (!isCalOpen()) return false;
       if (isModalOpen()) {
@@ -440,6 +457,11 @@
     }
   });
 
-  renderMonth();
-  renderDay();
+  async function bootCalendar() {
+    if (window.SIOS_STORE && window.SIOS_STORE.ready) await window.SIOS_STORE.ready;
+    events = loadEvents();
+    renderMonth();
+    renderDay();
+  }
+  bootCalendar();
 })();

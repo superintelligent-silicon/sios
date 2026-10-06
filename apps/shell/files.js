@@ -1,10 +1,10 @@
-/*! SIOS Files v0 — virtual FS in localStorage. No server upload. No real disk. */
+/*! SIOS Files v0 — virtual FS via SIOS_STORE (IndexedDB). No server upload. No real disk. */
 (function () {
   "use strict";
 
   const STORAGE_KEY = "sios-files-tree-v0";
-  const MAX_FILE_CHARS = 50000; // ~50KB text per file
-  const WARN_STORE_CHARS = 1_500_000; // soft warn before typical localStorage limits
+  const MAX_FILE_CHARS = 2_000_000; // ~2MB text per file (IndexedDB)
+  const WARN_STORE_CHARS = 8_000_000;
 
   const win = document.querySelector('[data-window="files"]');
   if (!win) return;
@@ -27,7 +27,7 @@
   const importMsg = document.getElementById("files-import-msg");
   const fileInput = document.getElementById("files-import");
 
-  let root = loadTree();
+  let root = { type: "dir", name: "", children: [] };
   let path = []; // array of folder names from root
   let openFilePath = null; // string[] including filename
   let dirty = false;
@@ -39,6 +39,22 @@
   }
 
   function defaultTree() {
+    const ts = now();
+    const welcomeMd =
+      "---\n" +
+      "title: Welcome\n" +
+      "created: " +
+      ts +
+      "\n" +
+      "updated: " +
+      ts +
+      "\n" +
+      "tags: []\n" +
+      "---\n\n" +
+      "Welcome to SIOS Files.\n\n" +
+      "This tree lives in IndexedDB on your device (migrated from localStorage if you had data).\n" +
+      "No real disk access. No server upload.\n\n" +
+      "Open **Notes** for a focused plain-text editor on `.md` files in this folder.\n";
     return {
       type: "dir",
       name: "",
@@ -49,10 +65,9 @@
           children: [
             {
               type: "file",
-              name: "welcome.txt",
-              content:
-                "Welcome to SIOS Files.\n\nThis is a virtual tree stored in localStorage on your device.\nNo real disk access. No server upload.\n",
-              updatedAt: now(),
+              name: "welcome.md",
+              content: welcomeMd,
+              updatedAt: ts,
             },
           ],
         },
@@ -60,8 +75,8 @@
           type: "file",
           name: "readme.txt",
           content:
-            "SIOS (Silicon OS / Superintelligent OS)\nVirtual filesystem v0\n\nExport JSON to back up. Import to restore.\n",
-          updatedAt: now(),
+            "SIOS (Silicon OS / Superintelligent OS)\nVirtual filesystem v0\n\nExport JSON or use Settings → Backup ZIP.\n",
+          updatedAt: ts,
         },
       ],
     };
@@ -69,9 +84,8 @@
 
   function loadTree() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return defaultTree();
-      const data = JSON.parse(raw);
+      const data = window.SIOS_STORE ? window.SIOS_STORE.get(STORAGE_KEY) : null;
+      if (!data) return defaultTree();
       const tree = data.tree || data;
       if (!tree || tree.type !== "dir" || !Array.isArray(tree.children)) {
         return defaultTree();
@@ -129,12 +143,49 @@
     };
     const json = JSON.stringify(payload);
     try {
-      localStorage.setItem(STORAGE_KEY, json);
+      if (!window.SIOS_STORE) throw new Error("SIOS_STORE missing");
+      // Fire-and-await pattern: sync cache via set's sync cache update; wait in bg
+      const p = window.SIOS_STORE.set(STORAGE_KEY, payload);
       updateQuota(json.length);
+      if (window.SIOS_STORE.requestPersist) {
+        window.SIOS_STORE.requestPersist().catch(() => {});
+      }
+      p.catch((err) => {
+        alert(
+          "Could not save (quota or private mode). Export a backup.\n\n" +
+            (err && err.message ? err.message : "")
+        );
+      });
       return true;
     } catch (err) {
       alert(
-        "Could not save to localStorage (quota or private mode). Export JSON as a backup.\n\n" +
+        "Could not save (quota or private mode). Export a backup.\n\n" +
+          (err && err.message ? err.message : "")
+      );
+      updateQuota(json.length);
+      return false;
+    }
+  }
+
+  async function persistAsync() {
+    const payload = {
+      app: "SIOS Files",
+      version: 0,
+      schema: "https://github.com/superintelligent-silicon/sios/blob/main/docs/FILES.md",
+      savedAt: now(),
+      tree: root,
+    };
+    const json = JSON.stringify(payload);
+    try {
+      await window.SIOS_STORE.set(STORAGE_KEY, payload);
+      updateQuota(json.length);
+      if (window.SIOS_STORE.requestPersist) {
+        await window.SIOS_STORE.requestPersist();
+      }
+      return true;
+    } catch (err) {
+      alert(
+        "Could not save (quota or private mode). Export a backup.\n\n" +
           (err && err.message ? err.message : "")
       );
       updateQuota(json.length);
@@ -144,9 +195,10 @@
 
   function updateQuota(len) {
     const kb = Math.round(len / 1024);
-    let msg = `Store ~${kb} KB in localStorage`;
+    const backend = window.SIOS_STORE && window.SIOS_STORE.backend ? window.SIOS_STORE.backend() : "?";
+    let msg = `Store ~${kb} KB · ${backend}`;
     if (len > WARN_STORE_CHARS) {
-      msg += " · nearing typical browser limits — export a backup";
+      msg += " · large tree — export a backup";
     }
     msg += ` · max ${Math.round(MAX_FILE_CHARS / 1000)}k chars/file`;
     quotaEl.textContent = msg;
@@ -301,7 +353,7 @@
     if (!file) return;
     let content = textarea.value;
     if (content.length > MAX_FILE_CHARS) {
-      alert(`File truncated to ${MAX_FILE_CHARS} characters (v0 localStorage limit).`);
+      alert(`File truncated to ${MAX_FILE_CHARS} characters (v0 limit).`);
       content = content.slice(0, MAX_FILE_CHARS);
       textarea.value = content;
     }
@@ -698,10 +750,65 @@
     });
   }
 
+  function getTree() {
+    return root;
+  }
+
+  function replaceTree(tree, opts) {
+    root = sanitizeTree(tree);
+    path = [];
+    closeEditor();
+    const ok = persist();
+    render();
+    if (opts && opts.notify !== false && window.SIOS_BUS && window.SIOS_BUS.toast) {
+      window.SIOS_BUS.toast("Files tree updated", "ok");
+    }
+    return ok;
+  }
+
+  function reloadFromStore() {
+    root = loadTree();
+    path = [];
+    closeEditor();
+    render();
+    updateQuota(JSON.stringify(root).length);
+  }
+
+  function listMarkdownNotes() {
+    const notesDir = dirAt(["Notes"]);
+    const out = [];
+    function walk(node, parts) {
+      if (!node) return;
+      if (node.type === "file") {
+        if (/\.md$/i.test(node.name)) {
+          out.push({
+            path: parts.concat(node.name),
+            name: node.name,
+            content: node.content || "",
+            updatedAt: node.updatedAt || "",
+          });
+        }
+        return;
+      }
+      (node.children || []).forEach((c) => walk(c, parts.concat(c.name)));
+    }
+    if (notesDir) walk(notesDir, ["Notes"]);
+    out.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+    return out;
+  }
+
   window.SIOS_FILES = {
     isOpen: isFilesOpen,
     isModalOpen,
     writeTextFile,
+    getTree,
+    replaceTree,
+    reloadFromStore,
+    listMarkdownNotes,
+    fileAt,
+    dirAt,
+    persistAsync,
+    STORAGE_KEY,
     handleKey(e) {
 
       if (!isFilesOpen()) return false;
@@ -755,9 +862,24 @@
     }
   });
 
-  // initial persist if first run
-  if (!localStorage.getItem(STORAGE_KEY)) persist();
-  else updateQuota(JSON.stringify(root).length);
+  async function bootFiles() {
+    if (window.SIOS_STORE && window.SIOS_STORE.ready) {
+      await window.SIOS_STORE.ready;
+    }
+    root = loadTree();
+    const existing = window.SIOS_STORE ? window.SIOS_STORE.get(STORAGE_KEY) : null;
+    if (!existing) await persistAsync();
+    else updateQuota(JSON.stringify(root).length);
+    render();
+    // Notify Notes if it loaded first
+    window.dispatchEvent(new CustomEvent("sios:files-ready"));
+  }
 
-  render();
+  // Placeholder root until boot
+  root = { type: "dir", name: "", children: [] };
+  bootFiles().catch((err) => {
+    console.error("Files boot failed", err);
+    root = defaultTree();
+    render();
+  });
 })();

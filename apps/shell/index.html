@@ -3,25 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIOS shell preview — Phase 0</title>
-  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 0 desktop preview. Files, Keys, Calc, and Calendar are live. Keys is local-only Web Crypto — not audited; no key collection." />
+  <title>SIOS shell preview — Phase 1a</title>
+  <meta name="description" content="SIOS (Silicon OS / Superintelligent OS) Phase 1a desktop preview. Files, Notes, Settings, Keys, Calc, Calendar, and UNENCRYPTED ZIP backup. Local-first Web Crypto — Keys not audited." />
   <meta name="theme-color" content="#050506" />
   <meta name="robots" content="index,follow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; worker-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests" />
   <link rel="canonical" href="https://exploresuperintelligence.online/sios/shell/" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;560;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <a class="skip" href="#desktop">Skip to desktop</a>
   <div class="ambient" aria-hidden="true"></div>
 
-  <div id="desktop" class="desktop" role="application" aria-label="SIOS Phase 0 desktop preview">
+  <div id="desktop" class="desktop" role="application" aria-label="SIOS Phase 1a desktop preview">
     <header class="menubar">
       <div class="menubar-left">
         <a class="brand" href="https://exploresuperintelligence.online/sios/" title="Back to SIOS">SIOS</a>
-        <span class="badge">Phase 0 · preview</span>
+        <span class="badge">Phase 1a · preview</span>
       </div>
       <nav class="menubar-mid" aria-label="Shell">
         <button type="button" class="menu-link" data-open="welcome" id="menu-welcome">Welcome</button>
@@ -29,7 +27,7 @@
         <a class="menu-link" href="https://github.com/superintelligent-silicon/sios">Source</a>
       </nav>
       <div class="menubar-right">
-        <span class="hint" id="focus-hint">Dock · Esc closes · 1–4 jump</span>
+        <span class="hint" id="focus-hint">Dock · Esc closes · 1–6 jump</span>
         <time class="clock" id="clock" datetime=""></time>
       </div>
     </header>
@@ -50,14 +48,15 @@
           <p class="serif">SIOS</p>
           <p class="sub">Silicon OS / Superintelligent OS</p>
           <p>
-            This is a <strong>live Phase 0 preview</strong> of the desktop chrome —
-            not a working OS. <strong>Files</strong>, <strong>Keys</strong>, <strong>Calc</strong>, and <strong>Calendar</strong> are live, with a local <strong>data bus</strong> (e.g. Save to Files).
-            Keys uses Web Crypto on-device only — not audited. No network calls from this shell.
+            This is a <strong>live Phase 1a preview</strong> —
+            <strong>Files</strong>, <strong>Notes</strong>, <strong>Settings</strong>, <strong>Keys</strong>, <strong>Calc</strong>, and <strong>Calendar</strong>,
+            plus <strong>UNENCRYPTED ZIP</strong> backup. IndexedDB storage · strict CSP · local data bus.
+            Keys uses Web Crypto on-device only — not audited.
           </p>
           <ul class="truth">
-            <li>Local-first by design (when modules ship)</li>
-            <li>Exportable data — no lock-in goal</li>
-            <li>MIT source on GitHub</li>
+            <li>Local-first — IndexedDB on this device</li>
+            <li>Exportable — JSON modules + labeled UNENCRYPTED ZIP</li>
+            <li>MIT source on GitHub · no accounts</li>
           </ul>
           <p class="muted">
             <a href="https://exploresuperintelligence.online/sios/">SIOS landing</a>
@@ -78,7 +77,7 @@
           <button type="button" class="win-close" data-close="files" aria-label="Close Files">✕</button>
         </div>
         <div class="body files-body">
-          <p class="files-live"><span class="dot" aria-hidden="true"></span> Live module · virtual FS · localStorage · exportable</p>
+          <p class="files-live"><span class="dot" aria-hidden="true"></span> Live module · virtual FS · IndexedDB · exportable</p>
           <div class="files-toolbar">
             <nav class="files-crumbs" id="files-crumbs" aria-label="Path"></nav>
             <div class="files-actions">
@@ -95,7 +94,7 @@
               <div class="empty-state files-empty" id="files-empty" hidden>
                 <div class="empty-glyph" aria-hidden="true">▦</div>
                 <p class="empty-title">This folder is empty</p>
-                <p class="empty-copy">Create a folder or text file — everything stays in localStorage on this device.</p>
+                <p class="empty-copy">Create a folder or text file — everything stays in IndexedDB on this device.</p>
               </div>
               <p class="files-quota" id="files-quota"></p>
             </div>
@@ -380,6 +379,140 @@
           </div>
         </div>
       </section>
+
+      <section class="window window-notes" data-window="notes" hidden aria-labelledby="title-notes" tabindex="-1">
+        <div class="titlebar">
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="notes" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-notes">Notes</h1>
+          <button type="button" class="win-close" data-close="notes" aria-label="Close Notes">✕</button>
+        </div>
+        <div class="body notes-body">
+          <p class="notes-live"><span class="dot" aria-hidden="true"></span> Live module · <code>.md</code> in Files/Notes · plain text only (no HTML)</p>
+          <div class="notes-toolbar">
+            <input type="search" id="notes-search" class="notes-search" placeholder="Search titles" autocomplete="off" />
+            <button type="button" class="files-btn primary" id="notes-new">New note</button>
+            <button type="button" class="files-link" id="notes-open-files">Open in Files</button>
+          </div>
+          <div class="notes-layout">
+            <div class="notes-list-pane">
+              <ul class="notes-list" id="notes-list" role="list"></ul>
+              <div class="empty-state notes-empty" id="notes-empty" hidden>
+                <div class="empty-glyph" aria-hidden="true">✎</div>
+                <p class="empty-title">No notes yet</p>
+                <p class="empty-copy">Create a <code>.md</code> note. It also appears under Files → Notes.</p>
+              </div>
+            </div>
+            <div class="notes-editor-pane">
+              <div class="empty-state notes-editor-empty" id="notes-editor-empty">
+                <div class="empty-glyph" aria-hidden="true">▤</div>
+                <p class="empty-title">No note open</p>
+                <p class="empty-copy">Plain-text editor only — Markdown is not rendered as HTML (XSS-safe).</p>
+              </div>
+              <div class="notes-editor" id="notes-editor" hidden>
+                <div class="notes-editor-bar">
+                  <input type="text" id="notes-title" class="notes-title" maxlength="120" aria-label="Note title" placeholder="Title" />
+                  <div class="notes-editor-actions">
+                    <button type="button" class="files-link danger" id="notes-delete">Delete</button>
+                    <button type="button" class="files-btn primary" id="notes-save" disabled>Saved</button>
+                  </div>
+                </div>
+                <p class="notes-meta" id="notes-meta"></p>
+                <textarea id="notes-textarea" spellcheck="true" aria-label="Note body"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="window window-settings" data-window="settings" hidden aria-labelledby="title-settings" tabindex="-1">
+        <div class="titlebar">
+          <div class="traffic" aria-hidden="true">
+            <button type="button" class="traf close" data-close="settings" tabindex="-1" title="Close"></button>
+            <button type="button" class="traf min" tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="traf zoom" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h1 id="title-settings">Settings</h1>
+          <button type="button" class="win-close" data-close="settings" aria-label="Close Settings">✕</button>
+        </div>
+        <div class="body settings-body">
+          <p class="settings-live"><span class="dot" aria-hidden="true"></span> Live module · local preferences · backup</p>
+
+          <div class="settings-grid">
+            <section class="settings-card">
+              <h2>Appearance</h2>
+              <label class="settings-field">
+                <span>Theme</span>
+                <select id="settings-theme">
+                  <option value="system">System</option>
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                </select>
+              </label>
+            </section>
+
+            <section class="settings-card">
+              <h2>Keys</h2>
+              <label class="settings-field">
+                <span>Idle lock timeout</span>
+                <select id="settings-lock">
+                  <option value="0">Off (lock on hide / tab blur only)</option>
+                  <option value="1">1 minute</option>
+                  <option value="5">5 minutes</option>
+                  <option value="15">15 minutes</option>
+                  <option value="30">30 minutes</option>
+                </select>
+              </label>
+              <p class="settings-help">When unlocked, Keys can auto-lock after idle time. Closing Keys or hiding the tab still locks immediately.</p>
+            </section>
+
+            <section class="settings-card">
+              <h2>Storage</h2>
+              <p class="settings-storage" id="settings-storage">Checking…</p>
+              <div class="settings-row" id="settings-persist">
+                <button type="button" class="files-btn" id="settings-persist-btn">Request persistent storage</button>
+                <button type="button" class="files-link" id="settings-refresh-storage">Refresh</button>
+              </div>
+              <p class="settings-help">Without persistence, browsers may evict site data under storage pressure.</p>
+            </section>
+
+            <section class="settings-card">
+              <h2>Backup ZIP</h2>
+              <p class="settings-warn"><strong>UNENCRYPTED.</strong> Exports leave the sandbox as plaintext. Filename is labeled <code>…-UNENCRYPTED.zip</code>. Keys vault is never included; optional encrypted blob list only if enabled below.</p>
+              <label class="settings-check">
+                <input type="checkbox" id="settings-include-keys" />
+                <span>Include Keys blob list in ZIP (still encrypted envelopes; no passphrase)</span>
+              </label>
+              <div class="settings-row">
+                <button type="button" class="files-btn primary" id="settings-export-zip">Export ZIP</button>
+                <button type="button" class="files-btn" id="settings-import-zip-btn">Import ZIP</button>
+                <input type="file" id="settings-import-zip" accept=".zip,application/zip" hidden />
+              </div>
+            </section>
+
+            <section class="settings-card">
+              <h2>About</h2>
+              <p class="settings-about" id="settings-about"></p>
+            </section>
+          </div>
+
+          <div class="files-modal" id="backup-import-modal" hidden>
+            <div class="files-modal-card" role="dialog" aria-modal="true" aria-labelledby="backup-import-title">
+              <h3 id="backup-import-title">Import UNENCRYPTED backup</h3>
+              <p class="files-import-msg" id="backup-import-msg"></p>
+              <div class="files-modal-actions">
+                <button type="button" class="files-btn" id="backup-import-cancel">Cancel</button>
+                <button type="button" class="files-btn" id="backup-import-merge">Merge</button>
+                <button type="button" class="files-btn primary" id="backup-import-replace">Replace</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <nav class="dock" aria-label="SIOS modules">
@@ -388,6 +521,12 @@
           <svg viewBox="0 0 32 32" fill="none"><path d="M5 8h8l2 2h12v14H5V8z" stroke="currentColor" stroke-width="1.5"/><path d="M5 12h22" stroke="currentColor" stroke-width="1.5"/></svg>
         </span>
         <span class="label">Files</span>
+      </button>
+      <button type="button" class="dock-item" data-open="notes" aria-controls="title-notes" aria-pressed="false">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M8 6h12l4 4v16H8V6z" stroke="currentColor" stroke-width="1.5"/><path d="M20 6v4h4M11 14h10M11 18h10M11 22h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span class="label">Notes</span>
       </button>
       <button type="button" class="dock-item" data-open="keys" aria-controls="title-keys" aria-pressed="false">
         <span class="icon" aria-hidden="true">
@@ -407,6 +546,12 @@
         </span>
         <span class="label">Calendar</span>
       </button>
+      <button type="button" class="dock-item" data-open="settings" aria-controls="title-settings" aria-pressed="false">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M16 7v2.2M16 22.8V25M7 16h2.2M22.8 16H25M9.8 9.8l1.6 1.6M20.6 20.6l1.6 1.6M9.8 22.2l1.6-1.6M20.6 11.4l1.6-1.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span class="label">Settings</span>
+      </button>
     </nav>
   </div>
 
@@ -415,9 +560,14 @@
     · SIOS shell · local-first
   </p>
 
+  <script src="vendor/fflate.min.js" defer></script>
+  <script src="store.js" defer></script>
   <script src="bus.js" defer></script>
   <script src="shell.js" defer></script>
   <script src="files.js" defer></script>
+  <script src="notes.js" defer></script>
+  <script src="settings.js" defer></script>
+  <script src="backup.js" defer></script>
   <script src="calc.js" defer></script>
   <script src="calendar.js" defer></script>
   <script src="keys.js" defer></script>
